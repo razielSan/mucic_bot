@@ -13,7 +13,9 @@ class Album(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     executor_name: Mapped[str]
-    executor_country: Mapped[str] = mapped_column(default="Скоро здесь будет название страны")
+    executor_country: Mapped[str] = mapped_column(
+        default="Скоро здесь будет название страны"
+    )
     title: Mapped[str]
     year: Mapped[int]
 

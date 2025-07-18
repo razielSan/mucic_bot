@@ -46,7 +46,7 @@ music = MusicSong(
 )
 
 
-@router.message(StateFilter(None), F.text == "добавить музыку")
+@router.message(StateFilter(None), F.text == "Добавить музыку")
 async def start_add_music(message: Message, state: FSMContext):
     """Начало работы FSM AddMusic."""
     chat_id = message.chat.id

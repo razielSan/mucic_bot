@@ -6,7 +6,12 @@ def get_music_menu_button():
     """Возвращает кнопки главного меню бота."""
     reply_kb = ReplyKeyboardBuilder(
         [
-            [KeyboardButton(text="добавить музыку")],
+            [
+                KeyboardButton(text="Добавить музыку"),
+            ],
+            [
+                KeyboardButton(text="Cписок исполнителей"),
+            ],
         ]
     )
 
