@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from extensions import Base
 
@@ -11,6 +11,8 @@ class Song(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     order: Mapped[int]
+    executor_name: Mapped[str] = mapped_column(default="Скоро здесь будет имя исполнителя")
+    executor_album: Mapped[str] = mapped_column(default="Скоро здесь будет название альбома")
     name: Mapped[str]
     file_id: Mapped[str]
 
@@ -19,10 +21,11 @@ class Song(Base):
         back_populates="songs",
         lazy="subquery",
     )
-    executor_id: Mapped[int] = mapped_column(
-        ForeignKey("executor.id", ondelete="CASCADE")
-    )
-    executor: Mapped["Executor"] = relationship(
-        back_populates="songs",
-        lazy="subquery",
+
+    __table_args__ = (
+        UniqueConstraint(
+            "name",
+            "album_id",
+            name="name_albumid_executorid_uc",
+        ),
     )

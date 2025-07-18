@@ -18,15 +18,17 @@ class UserSQLAlchemyRepository:
                 return True
             except Exception as err:
                 session.rollback()
+                session.close()
                 print(err)
                 return False
 
     def get_user_by_id(self, telegram: int):
         with db_helper.get_sesson() as session:
-            # try:
-            user = session.query(User).filter_by(telegram=telegram).first()
-            return user
-            # except Exception as err:
-            #     session.rollback()
-            #     print(err)
-            #     return False
+            try:
+                user = session.query(User).filter_by(telegram=telegram).first()
+                session.close()
+                return user
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False

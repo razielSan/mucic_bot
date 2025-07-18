@@ -17,5 +17,6 @@ class User(Base):
 
     executors: Mapped[List["Executor"]] = relationship(
         back_populates="user",
+        uselist=True,
         lazy="subquery",
     )

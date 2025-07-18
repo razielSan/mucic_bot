@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 
 from models.db_helper import db_helper
 from models import Gengre
@@ -7,7 +7,8 @@ from models import Gengre
 class GengreSQLAlchemyRepository:
     model = Gengre
 
-    def create_genre(self, title: str):
+    def create_one_genre(self, title: str):
+        """Создание одного жанра."""
         with db_helper.get_sesson() as session:
             try:
                 genre = Gengre(
@@ -15,28 +16,38 @@ class GengreSQLAlchemyRepository:
                 )
                 session.add(genre)
                 session.commit()
+                session.close()
                 return True
             except Exception as err:
                 session.rollback()
+                session.close()
                 print(err)
                 return False
 
-    def get_genre(self, title_list: List):
+    def get_genres(self, title_list: List):
+        """Возвращает список жанрова если они есть в модели Genre."""
         with db_helper.get_sesson() as session:
             try:
                 genre = session.query(Gengre).filter(Gengre.title.in_(title_list)).all()
+                session.close()
                 return genre
             except Exception as err:
                 session.rollback()
+                session.close()
                 print(err)
                 return False
 
     def get_all_genre(self):
         with db_helper.get_sesson() as session:
             try:
-                genre = session.query(Gengre).all()
-                return genre
+                genre_set = session.query(Gengre).all()
+                if genre_set:
+                    session.close()
+                    return {genre.title for genre in genre_set}
+                session.close()
+                return genre_set
             except Exception as err:
                 session.rollback()
+                session.close()
                 print(err)
                 return False

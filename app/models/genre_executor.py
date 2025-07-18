@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from extensions import Base
 
@@ -28,8 +28,8 @@ class Executor(Base):
     __tablename__ = "executor"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True)
-    country: Mapped[str] = mapped_column(default="")
+    name: Mapped[str] 
+    country: Mapped[str]
 
     user_id: Mapped[int] = mapped_column(
         ForeignKey(
@@ -40,11 +40,6 @@ class Executor(Base):
         back_populates="executors",
     )
 
-    songs: Mapped["Song"] = relationship(
-        back_populates="executor",
-        cascade="all, delete",
-        lazy="subquery",
-    )
     albums: Mapped[List["Album"]] = relationship(
         back_populates="executor",
         cascade="all, delete",
@@ -56,9 +51,19 @@ class Executor(Base):
         lazy="subquery",
     )
 
+    __table_args__ = (
+        UniqueConstraint(
+            "name",
+            "country",
+            "user_id",
+            name="name_country_userid_uc",
+        ),
+    )
+
 
 class Gengre(Base):
     """Модель для жанра."""
+
     __tablename__ = "genre"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -68,4 +73,5 @@ class Gengre(Base):
         secondary="genre_executor",
         back_populates="genres",
         lazy="subquery",
+        uselist=True,
     )

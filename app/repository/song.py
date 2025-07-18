@@ -11,24 +11,31 @@ class SongSQLAlchemyRepository:
 
     def create_songs(
         self,
-        order: int,
-        song: str,
+        songs: List,
         album_id: int,
-        executor_id: int,
-        file_id: str,
+        executor_name: str,
+        executor_album: str,
     ):
+        """Создание песен для альбома."""
         with db_helper.get_sesson() as session:
-            list_songs = []
-            for order, song in enumerate(songs, start=order):
-                list_songs.append(
-                    Song(
-                        order=order,
-                        name=song,
-                        album_id=album_id,
-                        executor_id=executor_id,
-                        file_id=file_id,
+            try:
+                list_songs = []
+                for order, songs in enumerate(songs, start=1):
+                    list_songs.append(
+                        Song(
+                            order=order,
+                            name=songs[1],
+                            album_id=album_id,
+                            file_id=songs[0],
+                            executor_name=executor_name,
+                            executor_album=executor_album,
+                        )
                     )
-                )
-            session.add_all(list_songs)
-            session.commit()
-            return True
+                session.add_all(list_songs)
+                session.commit()
+                session.close()
+                return True
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False

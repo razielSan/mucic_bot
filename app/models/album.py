@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UniqueConstraint
 
@@ -11,6 +13,7 @@ class Album(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     executor_name: Mapped[str]
+    executor_country: Mapped[str] = mapped_column(default="Скоро здесь будет название страны")
     title: Mapped[str]
     year: Mapped[int]
 
@@ -20,12 +23,16 @@ class Album(Base):
     executor: Mapped["Executor"] = relationship(
         back_populates="albums", lazy="subquery"
     )
-    songs: Mapped["Song"] = relationship(back_populates="album", lazy="subquery")
+    songs: Mapped[List["Song"]] = relationship(
+        back_populates="album",
+        lazy="subquery",
+    )
 
     __table_args__ = (
         UniqueConstraint(
             "executor_name",
             "title",
-            name="executorname_title_uc",
+            "executor_id",
+            name="executorname_title_executorid_uc",
         ),
     )
