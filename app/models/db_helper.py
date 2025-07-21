@@ -8,7 +8,9 @@ class DataBaseHeler:
     """Помощник для базы данных."""
 
     def __init__(self):
-        self.engine = create_engine(url=settings.SQLITE_BASE)
+        self.engine = create_engine(
+            url=settings.SQLITE_BASE, connect_args={"check_same_thread": False}
+        )
         self.session_factory = sessionmaker(bind=self.engine)
 
     def get_sesson(self):

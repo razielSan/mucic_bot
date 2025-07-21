@@ -39,3 +39,35 @@ class SongSQLAlchemyRepository:
                 session.rollback()
                 print(err)
                 return False
+
+    def update_executor_name_is_song(
+        self,
+        list_albums_id: List,
+        executor_name: str,
+    ):
+        with db_helper.get_sesson() as session:
+            try:
+                session.query(Song).filter(Song.album_id.in_(list_albums_id)).update(
+                    {Song.executor_name: executor_name}
+                )
+                session.commit()
+            except Exception as err:
+                print(err)
+                session.rollback()
+                return False
+
+    def get_songs(self, album_id: int):
+        """Возвращает все песни из альбома по id."""
+        with db_helper.get_sesson() as session:
+            try:
+                songs = (
+                    session.query(Song)
+                    .filter_by(album_id=album_id)
+                    .order_by(Song.order)
+                    .all()
+                )
+                return songs
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False

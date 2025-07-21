@@ -24,8 +24,26 @@ class GengreSQLAlchemyRepository:
                 print(err)
                 return False
 
+    def create_many_genre(self, title_list: List):
+        """Создание множества жанров."""
+        with db_helper.get_sesson() as session:
+            try:
+                for title in title_list:
+                    genre = Gengre(
+                        title=title,
+                    )
+                    session.add(genre)
+                session.commit()
+                session.close()
+                return True
+            except Exception as err:
+                session.rollback()
+                session.close()
+                print(err)
+                return False
+
     def get_genres(self, title_list: List):
-        """Возвращает список жанрова если они есть в модели Genre."""
+        """Возвращает список жанров если они есть в модели Genre."""
         with db_helper.get_sesson() as session:
             try:
                 genre = session.query(Gengre).filter(Gengre.title.in_(title_list)).all()

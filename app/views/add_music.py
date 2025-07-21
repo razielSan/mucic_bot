@@ -98,12 +98,12 @@ async def add_country(message: Message, state: FSMContext):
 
     # Создаем и получаем пользователя
     telegram = message.chat.id
-    user = UserSQLAlchemyRepository().get_user_by_id(telegram=telegram)
+    user = UserSQLAlchemyRepository().get_user_by_telegram(telegram=telegram)
     if not user:
         UserSQLAlchemyRepository().create_user(
             telegram=telegram, name=message.from_user.first_name
         )
-        user = UserSQLAlchemyRepository().get_user_by_id(telegram=telegram)
+        user = UserSQLAlchemyRepository().get_user_by_telegram(telegram=telegram)
     # Проверяем есть ли такой исполнитель в базе данных
     executor = ExecutorSQLAlchemyRepository().get_executor_by_name_and_country(
         name=data["executor"],
@@ -117,9 +117,8 @@ async def add_country(message: Message, state: FSMContext):
         await add_genre(message=message, state=state)
     else:
         await message.answer(
-            f"Введите жанры в котором играет исполнитель через пробел в формате\n\nВведите название альбома"
-            f"металл панк-рок блюз\n"
-            f"пост-панк",
+            f"Введите жанры в котором играет исполнитель через пробел в формате\n\n"
+            f"металл панк-рок блюз",
             reply_markup=get_add_music_button(),
         )
         await state.set_state(AddMusic.genre)
@@ -139,7 +138,12 @@ async def add_genre(message: Message, state: FSMContext):
         list_genres = {genre.lower() for genre in list_genres}
         await state.update_data(genre=list(list_genres))
 
-    await message.answer("Введите название альбома")
+    data = await state.get_data()
+    print(data)
+    await message.answer(
+        "Введите название альбома",
+        reply_markup=get_add_music_button(),
+    )
     await state.set_state(AddMusic.album)
 
 
@@ -229,7 +233,7 @@ async def add_songs(message: Message, state: FSMContext):
             country = data["country"]
             # Создаем исполнителя
             list_genres = data["genre"]
-            user = UserSQLAlchemyRepository().get_user_by_id(
+            user = UserSQLAlchemyRepository().get_user_by_telegram(
                 telegram=message.chat.id,
             )
             print(list_genres)
@@ -292,6 +296,11 @@ async def add_songs(message: Message, state: FSMContext):
                         title=album.title,
                         year=album.year,
                         executor_id=executor_id,
+                    )
+                    ExecutorSQLAlchemyRepository().delete_executor(
+                        name=executor_name,
+                        user_id=user.id,
+                        country=executor_country,
                     )
                     await state.clear()
                     await message.answer(

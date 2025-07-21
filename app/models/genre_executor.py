@@ -28,7 +28,7 @@ class Executor(Base):
     __tablename__ = "executor"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] 
+    name: Mapped[str]
     country: Mapped[str]
 
     user_id: Mapped[int] = mapped_column(
@@ -59,6 +59,10 @@ class Executor(Base):
             name="name_country_userid_uc",
         ),
     )
+
+    def __repr__(self):
+        return str(self.name)
+
 
 
 class Gengre(Base):

@@ -38,25 +38,25 @@ async def start(message: Message):
     # await message.answer_audio(audio_file)
 
 
-@router.message()
-async def start2(message: Message):
-    user = UserSQLAlchemyRepository().get_user_by_id(telegram=message.chat.id)
-    executor = ExecutorSQLAlchemyRepository().get_executor_by_name(
-        user_id=user.id, name="Ария", country="Неизвестно"
-    )
-    alubum = AlbumSQLAlchemyRepository().delete_album(
-        title="Среда", year=2023, executor_id=executor.id
-    )
-    if alubum:
-        result = ExecutorSQLAlchemyRepository().delete_executor(
-            name="Ария", user_id=user.id, country="Неизвестно"
-        )
-        if result:
-            await message.answer(f"{result}")
-        else:
-            await message.answer("executor none")
-    else:
-        await message.answer("album none")
+# @router.message()
+# async def start2(message: Message):
+#     user = UserSQLAlchemyRepository().get_user_by_id(telegram=message.chat.id)
+#     executor = ExecutorSQLAlchemyRepository().get_executor_by_name(
+#         user_id=user.id, name="Ария", country="Неизвестно"
+#     )
+#     alubum = AlbumSQLAlchemyRepository().delete_album(
+#         title="Среда", year=2023, executor_id=executor.id
+#     )
+#     if alubum:
+#         result = ExecutorSQLAlchemyRepository().delete_executor(
+#             name="Ария", user_id=user.id, country="Неизвестно"
+#         )
+#         if result:
+#             await message.answer(f"{result}")
+#         else:
+#             await message.answer("executor none")
+#     else:
+#         await message.answer("album none")
     
 
 

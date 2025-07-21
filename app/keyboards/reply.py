@@ -26,3 +26,28 @@ def get_add_music_button(country=False):
     reply_kb.row(KeyboardButton(text="Отмена"))
 
     return reply_kb.as_markup(resize_keyboard=True)
+
+
+def get_update_genre_executors_button():
+    """Возвращает кнопки для изменения жанры исполнителя музыки."""
+    reply_kb = ReplyKeyboardBuilder()
+    reply_kb.row(KeyboardButton(text="<Отмена>"))
+
+    return reply_kb.as_markup(resize_keyboard=True)
+
+
+def get_delete_executor_and_album_button():
+    """Возвращает кнопки для удаления исполнителя музыки."""
+    reply_kb = ReplyKeyboardBuilder()
+    reply_kb.row(KeyboardButton(text="Я передумал"))
+
+    return reply_kb.as_markup(resize_keyboard=True)
+
+
+
+def get_update_executorname_and_country_button():
+    """Возвращает кнопки изменения имени пользователя или страны."""
+    reply_kb = ReplyKeyboardBuilder()
+    reply_kb.row(KeyboardButton(text="Отмена"))
+
+    return reply_kb.as_markup(resize_keyboard=True)
