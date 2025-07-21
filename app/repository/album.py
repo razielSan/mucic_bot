@@ -49,15 +49,122 @@ class AlbumSQLAlchemyRepository:
             session.close()
             return album
 
+    def get_album_is_id(
+        self,
+        album_id: int,
+        executor_id: int,
+    ):
+        """Возвращает альбом исполнителя по id."""
+        with db_helper.get_sesson() as session:
+            album = (
+                session.query(Album)
+                .filter_by(
+                    executor_id=executor_id,
+                    id=album_id,
+                )
+                .first()
+            )
+            session.close()
+            return album
+
+    def get_album_is_id(self, album_id: int, executor_id: int):
+        """Возвращает альбом исполнителя по id."""
+        with db_helper.get_sesson() as session:
+            album = (
+                session.query(Album)
+                .filter_by(
+                    executor_id=executor_id,
+                    id=album_id,
+                )
+                .first()
+            )
+            session.close()
+            return album
+
+    def delete_all_albums(self, executor_id: int):
+        """Удаляет все альбомы исполнителя."""
+        try:
+            with db_helper.get_sesson() as session:
+                session.execute(text("PRAGMA foreign_keys=ON"))
+                session.query(Album).filter_by(executor_id=executor_id).delete()
+                session.commit()
+                session.close()
+                return True
+        except Exception as err:
+            print(err)
+            session.rollback()
+            session.close()
+            return False
+
+    def update_executor_name_is_album(self, executor_id: int, executor_name: str):
+        """Изменяет executor_name в альбоме."""
+        with db_helper.get_sesson() as session:
+            try:
+                session.query(Album).filter(Album.executor_id == executor_id).update(
+                    {
+                        Album.executor_name: executor_name,
+                    }
+                )
+
+                session.commit()
+                return True
+            except Exception as err:
+                print(err)
+                session.rollback()
+                return False
+
+    def update_executor_county_is_album(self, executor_id: int, executor_country: str):
+        """Изменяет executor_country в альбоме."""
+        with db_helper.get_sesson() as session:
+            try:
+                session.query(Album).filter(Album.executor_id == executor_id).update(
+                    {
+                        Album.executor_country: executor_country,
+                    }
+                )
+
+                session.commit()
+                return True
+            except Exception as err:
+                print(err)
+                session.rollback()
+                return False
+
     def delete_album(self, title: str, year: int, executor_id: int):
         """Удаляет альбом."""
-        with db_helper.get_sesson() as session:
-            session.execute(text("PRAGMA foreign_keys=ON"))
-            session.query(Album).filter_by(
-                title=title,
-                year=year,
-                executor_id=executor_id,
-            ).delete()
-            session.commit()
-            session.close()
-            return True
+        try:
+            with db_helper.get_sesson() as session:
+                session.execute(text("PRAGMA foreign_keys=ON"))
+                session.query(Album).filter_by(
+                    title=title,
+                    year=year,
+                    executor_id=executor_id,
+                ).delete()
+                session.commit()
+                session.close()
+                return True
+        except Exception as err:
+            print(err)
+            session.rollback()
+            return False
+
+    def delete_album_is_id(
+        self,
+        executor_id: int,
+        album_id: int,
+    ):
+        """Удаляет альбом по id."""
+        try:
+            with db_helper.get_sesson() as session:
+                session.execute(text("PRAGMA foreign_keys=ON"))
+                session.query(Album).filter_by(
+                    id=album_id,
+                    executor_id=executor_id,
+                ).delete()
+                session.commit()
+                session.close()
+                return True
+        except Exception as err:
+            print(err)
+            session.rollback()
+            return False

@@ -22,7 +22,7 @@ class UserSQLAlchemyRepository:
                 print(err)
                 return False
 
-    def get_user_by_id(self, telegram: int):
+    def get_user_by_telegram(self, telegram: int):
         with db_helper.get_sesson() as session:
             try:
                 user = session.query(User).filter_by(telegram=telegram).first()
