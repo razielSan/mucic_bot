@@ -7,6 +7,8 @@ from models import Executor, User
 
 
 class ExecutorSQLAlchemyRepository:
+    """Репозиторий для модели исполнителя."""
+
     model = Executor
 
     def create_executor(
@@ -61,6 +63,56 @@ class ExecutorSQLAlchemyRepository:
                 print(err)
                 return False
 
+    def get_executors_by_name(
+        self,
+        name: str,
+        user_id: int,
+    ):
+        """Возвращает исполнителей по имени."""
+        with db_helper.get_sesson() as session:
+            try:
+                executor = (
+                    session.query(Executor)
+                    .filter_by(
+                        name=name,
+                        user_id=user_id,
+                    )
+                    .order_by(Executor.country)
+                    .all()
+                )
+                session.close()
+                return executor
+            except Exception as err:
+                session.rollback()
+                session.close()
+                print(err)
+                return False
+
+    def get_executors_by_country(
+        self,
+        country: str,
+        user_id: int,
+    ):
+        """Возвращает исполнителей по стране."""
+        with db_helper.get_sesson() as session:
+            try:
+                executor = (
+                    session.query(Executor)
+                    .filter_by(
+                        country=country,
+                        user_id=user_id,
+                    )
+                    .order_by(Executor.name)
+                    .all()
+                )
+                session.close()
+                return executor
+            except Exception as err:
+                session.rollback()
+                session.close()
+                print(err)
+                return False
+
     def get_executor_by_id(self, id: int, user_id: int):
         """Возвращает исполнителя по id."""
         with db_helper.get_sesson() as session:
@@ -90,7 +142,6 @@ class ExecutorSQLAlchemyRepository:
                         func.lower(Executor.name),
                     )
                 ).all()
-                print("oiooooooooo")
                 return executors
             except Exception as err:
                 session.rollback()
@@ -103,6 +154,7 @@ class ExecutorSQLAlchemyRepository:
         user_id: int,
         list_genres: List,
     ):
+        """Изменяет жанры исполнителя."""
         with db_helper.get_sesson() as session:
             try:
                 executor = (
@@ -113,12 +165,44 @@ class ExecutorSQLAlchemyRepository:
                     )
                     .first()
                 )
+                print("ok")
+                print(list_genres)
+                print(executor.genres)
+                executor.genres.clear()
                 executor.genres = list_genres
+                print(executor.genres)
+                print("no")
                 session.commit()
                 return True
             except Exception as err:
                 print(err)
                 session.rollback()
+                return False
+
+    def resets_genres(
+        self,
+        executor_id: int,
+        user_id: int,
+    ):
+        """Обнуляет жанры исполнителя."""
+        with db_helper.get_sesson() as session:
+            try:
+                executor = (
+                    session.query(Executor)
+                    .filter_by(
+                        id=executor_id,
+                        user_id=user_id,
+                    )
+                    .first()
+                )
+                executor.genres = []
+                session.commit()
+                session.close()
+                return True
+            except Exception as err:
+                print(err)
+                session.rollback()
+                session.close()
                 return False
 
     def update_name(self, executor_id: int, user_id: int, execotor_name: str):

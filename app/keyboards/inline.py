@@ -4,7 +4,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton
 
 from repository.executor import ExecutorSQLAlchemyRepository
-from models import Executor, Album
+from repository.album import AlbumSQLAlchemyRepository
+from models import Executor
 
 
 def get_albums_executors_button(
@@ -49,9 +50,9 @@ def get_albums_executors_button(
             )
 
     else:
-        print("*" * 10)
         # Логика для списка альбомов исполнителя
-        for album in executor.albums:
+        albums = AlbumSQLAlchemyRepository().get_albums(executor_id=executor.id)
+        for album in albums:
             inline_kb.row(
                 InlineKeyboardButton(
                     text=f"🤘 {album.title}     ({album.year}) 🤘",
@@ -95,7 +96,7 @@ def get_albums_executors_button(
                 text="😢 Удалить Aльбом 😢",
                 callback_data=f"delete_album {executor.id}_{album.id}",
             )
-        )        
+        )
 
     # Логика для подключения кнопок forward и back
     if len_executors == 1:
@@ -122,4 +123,49 @@ def get_albums_executors_button(
             )
         )
 
+    return inline_kb.as_markup(resize_keyboard=True)
+
+
+def get_search_inline_button():
+    """Возвращает инлайн-клавиатуру с кнопками поиска."""
+    inline_kb = InlineKeyboardBuilder()
+    inline_kb.row(
+        InlineKeyboardButton(
+            text="🔎 По Имени 🔍",
+            callback_data="search_name",
+        )
+    )
+    inline_kb.row(
+        InlineKeyboardButton(
+            text="🔎 По Стране 🔍",
+            callback_data="search_country",
+        )
+    )
+    inline_kb.row(
+        InlineKeyboardButton(
+            text="🔎 По Жанру 🔍",
+            callback_data="search_genre",
+        )
+    )
+    inline_kb.row(
+        InlineKeyboardButton(
+            text="🔎 Вывод Всех Исполнителей 🔍",
+            callback_data="search_all",
+        )
+    )
+    return inline_kb.as_markup(resize_keyboard=True)
+
+
+def get_button_is_search_executor(
+    executors_list: List[Executor],
+):
+    """Возвращает кнопки со списком исполнителей."""
+    inline_kb = InlineKeyboardBuilder()
+    for executor in executors_list:
+        inline_kb.row(
+            InlineKeyboardButton(
+                text=f"{executor.name} ({executor.country})",
+                callback_data=f"input {executor.id}",
+            )
+        )
     return inline_kb.as_markup(resize_keyboard=True)

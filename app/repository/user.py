@@ -4,6 +4,8 @@ from models import User
 
 
 class UserSQLAlchemyRepository:
+    """Репозиторий для модели пользователя."""
+
     model = User
 
     def create_user(self, telegram: int, name: str):

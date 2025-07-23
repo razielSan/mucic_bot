@@ -12,6 +12,9 @@ def get_music_menu_button():
             [
                 KeyboardButton(text="Cписок исполнителей"),
             ],
+            [
+                KeyboardButton(text="Поиск"),
+            ],
         ]
     )
 
@@ -44,9 +47,16 @@ def get_delete_executor_and_album_button():
     return reply_kb.as_markup(resize_keyboard=True)
 
 
-
 def get_update_executorname_and_country_button():
     """Возвращает кнопки изменения имени пользователя или страны."""
+    reply_kb = ReplyKeyboardBuilder()
+    reply_kb.row(KeyboardButton(text="Отмена"))
+
+    return reply_kb.as_markup(resize_keyboard=True)
+
+
+def get_search_reply_button():
+    """Возвращает кнопки для поиска."""
     reply_kb = ReplyKeyboardBuilder()
     reply_kb.row(KeyboardButton(text="Отмена"))
 

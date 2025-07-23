@@ -1,4 +1,3 @@
-from copy import deepcopy
 import asyncio
 from dataclasses import dataclass
 from typing import List
@@ -19,10 +18,12 @@ from repository.genre import GengreSQLAlchemyRepository
 from repository.user import UserSQLAlchemyRepository
 
 
-router = Router()
+router = Router(name=__name__)
 
 
 class AddMusic(StatesGroup):
+    """FSM для добавления музыки."""
+
     executor = State()
     country = State()
     genre = State()
@@ -36,6 +37,8 @@ class AddMusic(StatesGroup):
 
 @dataclass
 class MusicSong:
+    """Класс для хранения file_id песни и списка песен альбома исполнителя."""
+
     file_id: str
     list_songs: List
 
@@ -52,6 +55,13 @@ async def start_add_music(message: Message, state: FSMContext):
     chat_id = message.chat.id
     message_id = message.message_id
 
+    # Создание жанра для обновления жанров
+    genre = GengreSQLAlchemyRepository().get_genres(["Жанр Для Обновления Жанров"])
+    if not genre:
+        genre = GengreSQLAlchemyRepository().create_one_genre(
+            title="Жанр Для Обновления Жанров"
+        )
+
     await bot.delete_message(chat_id=chat_id, message_id=message_id)
 
     await state.clear()
@@ -64,6 +74,7 @@ async def start_add_music(message: Message, state: FSMContext):
 
 @router.message(StateFilter("*"), F.text == "Отмена")
 async def cancel_handler(message: Message, state: FSMContext):
+    """Отменяет добавления музыки."""
     current_state = await state.get_state()
     if current_state is None:
         return
@@ -117,8 +128,8 @@ async def add_country(message: Message, state: FSMContext):
         await add_genre(message=message, state=state)
     else:
         await message.answer(
-            f"Введите жанры в котором играет исполнитель через пробел в формате\n\n"
-            f"металл панк-рок блюз",
+            "Введите жанры в котором играет исполнитель через пробел в формате\n\n"
+            "металл панк-рок блюз",
             reply_markup=get_add_music_button(),
         )
         await state.set_state(AddMusic.genre)
@@ -133,13 +144,11 @@ async def add_genre(message: Message, state: FSMContext):
     if not genre:
         pass
     else:
-        print("FFFf")
         list_genres = message.text.split(" ")
         list_genres = {genre.lower() for genre in list_genres}
         await state.update_data(genre=list(list_genres))
 
     data = await state.get_data()
-    print(data)
     await message.answer(
         "Введите название альбома",
         reply_markup=get_add_music_button(),
@@ -159,7 +168,6 @@ async def add_album(message: Message, state: FSMContext):
 @router.message(AddMusic.year, F.text)
 async def add_year(message: Message, state: FSMContext):
     """Реакция бота на введение пользователем года выпуска альбома."""
-
     year, mess = cheak_data_is_number(
         data=message.text,
         year=True,
@@ -167,12 +175,11 @@ async def add_year(message: Message, state: FSMContext):
     if not year:
         await message.answer(f"{mess['error']}\n\nВведите год выпуска альбома снова")
     else:
-        print(type(year))
         await state.update_data(year=year)
 
         await message.answer(
-            "Введите количество песен в альбоме.\n\n"
-            f"Какое количество песен вы укажите столько и будет добавлено в альбом, независимо от того сколько вы скините их"
+            "Введите количество песен в альбоме, не более 30 песен.\n\n"
+            "Какое количество песен вы укажите столько и будет добавлено в альбом, независимо от того сколько вы скинете их"
         )
         await state.set_state(AddMusic.quantity)
 
@@ -180,18 +187,17 @@ async def add_year(message: Message, state: FSMContext):
 @router.message(AddMusic.quantity, F.text)
 async def add_quantity(message: Message, state: FSMContext):
     """Реакция бота на введение пользователем количество песен в альбоме."""
-
     quantity, mess = cheak_data_is_number(data=message.text, quantity=True)
     if not quantity:
         await message.answer(
             f"{mess['error']}\n\nВведите количество песен в альбоме снова."
-            f"\n\nКакое количество песен вы укажите столько и будет добавлено в альбом, независимо от того сколько вы скините их"
+            f"\n\nКакое количество песен вы укажите столько и будет добавлено в альбом, независимо от того сколько вы скинете их"
         )
     else:
         await state.update_data(quantity=quantity)
 
         await message.answer(
-            "Скидывайте песни из альбома в количестве не более 50 штук"
+            "Скидывайте песни из альбома в количестве не более 30 штук"
         )
         await state.set_state(AddMusic.counter)
         await state.update_data(counter=0)
@@ -226,9 +232,18 @@ async def add_songs(message: Message, state: FSMContext):
         global music
         await asyncio.gather(task())
         data = await state.get_data()
+        if data["counter"] > 30:
+            await state.clear()
+            await message.answer("Количество песен не должно превышать 30")
+            await start_add_music(message=message, state=state)
+            return
         if message.audio.file_id == music.file_id:
-
             data = await state.get_data()
+            if data["counter"] > 30:
+                await state.clear()
+                await message.answer("Количество песен не должно превышать 30")
+                await start_add_music(message=message, state=state)
+                return
             executor = data["executor"]
             country = data["country"]
             # Создаем исполнителя
@@ -236,7 +251,6 @@ async def add_songs(message: Message, state: FSMContext):
             user = UserSQLAlchemyRepository().get_user_by_telegram(
                 telegram=message.chat.id,
             )
-            print(list_genres)
             if list_genres:
                 for genre in list_genres:
                     GengreSQLAlchemyRepository().create_one_genre(title=genre)
@@ -284,6 +298,7 @@ async def add_songs(message: Message, state: FSMContext):
                     executor_album=album.title,
                 )
                 if songs:
+                    print(data)
                     await state.clear()
                     await message.answer("Музыка успешно добавлена")
                     await bot.send_message(
@@ -291,6 +306,7 @@ async def add_songs(message: Message, state: FSMContext):
                         reply_markup=get_music_menu_button(),
                         chat_id=message.chat.id,
                     )
+                    return
                 else:
                     AlbumSQLAlchemyRepository().delete_album(
                         title=album.title,
@@ -304,7 +320,7 @@ async def add_songs(message: Message, state: FSMContext):
                     )
                     await state.clear()
                     await message.answer(
-                        f"В одном альбоме не может быть двух песен с одинаковым названием"
+                        "В одном альбоме не может быть двух песен с одинаковым названием"
                     )
                     await start_add_music(message=message, state=state)
             else:

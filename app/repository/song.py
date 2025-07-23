@@ -1,12 +1,12 @@
 from typing import List
 
-from sqlalchemy import text
-
 from models.db_helper import db_helper
 from models import Song
 
 
 class SongSQLAlchemyRepository:
+    """Репозиторий для модели песни."""
+
     model: Song
 
     def create_songs(
@@ -45,6 +45,7 @@ class SongSQLAlchemyRepository:
         list_albums_id: List,
         executor_name: str,
     ):
+        """Обновляет execucotr_name у песен по album_id."""
         with db_helper.get_sesson() as session:
             try:
                 session.query(Song).filter(Song.album_id.in_(list_albums_id)).update(

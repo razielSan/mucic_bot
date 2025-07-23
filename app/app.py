@@ -4,6 +4,7 @@ from extensions import bot, dp
 from views.main import router as main_router
 from views.add_music import router as add_music_router
 from views.list_executor import router as list_execoutor_router
+from views.search import router as search_router
 from config import settings
 
 async def on_startup():
@@ -18,6 +19,7 @@ async def main():
 
     dp.startup.register(on_startup)
     dp.include_router(list_execoutor_router)
+    dp.include_router(search_router)
     dp.include_router(add_music_router)
     dp.include_router(main_router)
     await dp.start_polling(bot)

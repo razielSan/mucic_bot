@@ -19,6 +19,8 @@ convention = {
 
 
 class Base(DeclarativeBase):
+    """Декларативный базовый класс."""
+
     metadata = MetaData(naming_convention=convention)
 
 

@@ -61,8 +61,8 @@ class Executor(Base):
     )
 
     def __repr__(self):
+        """Представление модели исполнителя."""
         return str(self.name)
-
 
 
 class Gengre(Base):
@@ -79,3 +79,6 @@ class Gengre(Base):
         lazy="subquery",
         uselist=True,
     )
+
+    def __repr__(self):
+        return str(self.title)

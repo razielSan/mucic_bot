@@ -1,10 +1,12 @@
 from sqlalchemy import text
 
 from models.db_helper import db_helper
-from models import Album, Executor
+from models import Album
 
 
 class AlbumSQLAlchemyRepository:
+    """Репозиторий для модели альбома."""
+
     model = Album
 
     def create_album(
@@ -49,6 +51,20 @@ class AlbumSQLAlchemyRepository:
             session.close()
             return album
 
+    def get_albums(self, executor_id: int):
+        """Возвращает список всех альбомов исполнителя по executor_id."""
+        with db_helper.get_sesson() as session:
+            album = (
+                session.query(Album)
+                .filter_by(
+                    executor_id=executor_id,
+                )
+                .order_by(Album.year)
+                .all()
+            )
+            session.close()
+            return album
+
     def get_album_is_id(
         self,
         album_id: int,
@@ -56,30 +72,21 @@ class AlbumSQLAlchemyRepository:
     ):
         """Возвращает альбом исполнителя по id."""
         with db_helper.get_sesson() as session:
-            album = (
-                session.query(Album)
-                .filter_by(
-                    executor_id=executor_id,
-                    id=album_id,
+            try:
+                album = (
+                    session.query(Album)
+                    .filter_by(
+                        executor_id=executor_id,
+                        id=album_id,
+                    )
+                    .first()
                 )
-                .first()
-            )
-            session.close()
-            return album
-
-    def get_album_is_id(self, album_id: int, executor_id: int):
-        """Возвращает альбом исполнителя по id."""
-        with db_helper.get_sesson() as session:
-            album = (
-                session.query(Album)
-                .filter_by(
-                    executor_id=executor_id,
-                    id=album_id,
-                )
-                .first()
-            )
-            session.close()
-            return album
+                session.close()
+                return album
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False
 
     def delete_all_albums(self, executor_id: int):
         """Удаляет все альбомы исполнителя."""

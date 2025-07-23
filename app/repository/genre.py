@@ -1,10 +1,12 @@
-from typing import List, Set
+from typing import List
 
 from models.db_helper import db_helper
 from models import Gengre
 
 
 class GengreSQLAlchemyRepository:
+    """Репозиторий для модели жанра."""
+
     model = Gengre
 
     def create_one_genre(self, title: str):
@@ -56,6 +58,7 @@ class GengreSQLAlchemyRepository:
                 return False
 
     def get_all_genre(self):
+        """Возвращает список всех жанров."""
         with db_helper.get_sesson() as session:
             try:
                 genre_set = session.query(Gengre).all()
