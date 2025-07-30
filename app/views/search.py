@@ -12,6 +12,8 @@ from keyboards.inline import (
 from keyboards.reply import get_search_reply_button, get_music_menu_button
 from repository.user import UserSQLAlchemyRepository
 from repository.executor import ExecutorSQLAlchemyRepository
+from repository.album import AlbumSQLAlchemyRepository
+from repository.song import SongSQLAlchemyRepository
 from functions import get_info_executors
 
 
@@ -133,10 +135,14 @@ async def search_executor(message: Message, state: FSMContext):
     else:
         user = UserSQLAlchemyRepository().get_user_by_telegram(telegram=message.chat.id)
         if executor_name:
-            executors = ExecutorSQLAlchemyRepository().get_executors_by_name(
-                name=mess,
-                user_id=user.id,
+
+            executors_list = ExecutorSQLAlchemyRepository().get_executors_is_user(
+                user_id=user.id
             )
+            executors = []
+            for executor in executors_list:
+                if executor.name.lower() == mess.lower():
+                    executors.append(executor)
             await state.clear()
             await bot.send_message(
                 chat_id=message.chat.id,
@@ -222,7 +228,18 @@ async def show_executors_is_search(call: CallbackQuery):
         id=int(executor_id), user_id=user.id
     )
 
-    data_executor = get_info_executors(executor=executor)
+    data_executor = get_info_executors(executor=executor, user=user)
+
+    # Проверяет является ли альбом сборником песен
+    album = None
+    list_songs = None
+    if executor.name == user.name and executor.country == user.name:
+        album = AlbumSQLAlchemyRepository().get_album(
+            executor_name=user.name,
+            title="Сборник песен",
+            executor_id=executor.id,
+        )
+        list_songs = SongSQLAlchemyRepository().get_songs(album_id=album.id)
 
     await bot.send_message(
         chat_id=call.message.chat.id,
@@ -231,5 +248,10 @@ async def show_executors_is_search(call: CallbackQuery):
     )
     await call.message.answer(
         text=data_executor,
-        reply_markup=get_albums_executors_button(executor=executor, user_id=user.id),
+        reply_markup=get_albums_executors_button(
+            executor=executor,
+            user=user,
+            album=album,
+            list_songs=list_songs,
+        ),
     )

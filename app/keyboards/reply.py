@@ -13,7 +13,8 @@ def get_music_menu_button():
                 KeyboardButton(text="Добавить музыку (искать в сети)"),
             ],
             [
-                KeyboardButton(text="Добавить музыку в альбом"),
+                KeyboardButton(text="Добавить музыку в сборник песен"),
+                KeyboardButton(text="Сборник песен"),
             ],
             [
                 KeyboardButton(text="Cписок исполнителей"),

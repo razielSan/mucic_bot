@@ -49,7 +49,7 @@ music = MusicSong(
 )
 
 
-@router.message(StateFilter(None), F.text == "Добавить музыку (скидывать музыку самостоятельно)")
+@router.message(StateFilter(None), F.text == "Добавить музыку (самостоятельно)")
 async def start_add_music(message: Message, state: FSMContext):
     """Начало работы FSM AddMusic."""
     chat_id = message.chat.id
@@ -180,7 +180,7 @@ async def add_year(message: Message, state: FSMContext):
 @router.message(AddMusic.quantity, F.text)
 async def add_quantity(message: Message, state: FSMContext):
     """Реакция бота на введение пользователем количество песен в альбоме."""
-    quantity, mess = cheak_data_is_number(data=message.text, quantity=True)
+    quantity, mess = cheak_data_is_number(data=message.text, quantity=30)
     if not quantity:
         await message.answer(
             f"{mess['error']}\n\nВведите количество песен в альбоме снова."

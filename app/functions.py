@@ -3,24 +3,27 @@ from typing import List
 from models import Executor, User
 from repository.executor import ExecutorSQLAlchemyRepository
 from repository.genre import GengreSQLAlchemyRepository
+from repository.user import UserSQLAlchemyRepository
 
 
-def get_info_executors(executor: Executor):
+def get_info_executors(executor: Executor, user: User):
     """Возвращает информацию о исполнителе."""
     data_list = []
 
-    executors = [genre.title for genre in executor.genres]
-    data = (
-        f"🎧 {executor.name} 🎧\n\n🎧 Страна: {executor.country} 🎧\nЖанры: {executors[0]}"
-    )
-    data_list.append(data)
-    data_list.extend(executors[1:])
-    data_executor = ", ".join(data_list).strip(",")
+    if executor.country == user.name and executor.name == user.name:
+        info = "🎧 Сборник песен  🎧"
+    else:
+        executors = [genre.title for genre in executor.genres]
+        data = (
+            f"🎧 {executor.name} 🎧\n\n🎧 Страна: {executor.country} 🎧\nЖанры: {executors[0]}"
+        )
+        data_list.append(data)
+        data_list.extend(executors[1:])
+        data_executor = ", ".join(data_list).strip(",")
 
-    album = f"\n\n🎧 Список альбомов 🎧"
+        album = f"\n\n🎧 Список альбомов 🎧"
 
-    info = "".join([data_executor, album])
-
+        info = "".join([data_executor, album])
     return info
 
 

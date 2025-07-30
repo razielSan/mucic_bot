@@ -49,7 +49,21 @@ async def get_executors_information(message: Message):
 
     if executors:
         executor = executors[0]
-        data_executor = get_info_executors(executor=executor)
+        data_executor = get_info_executors(
+            executor=executor,
+            user=user,
+        )
+
+        # Проверяет является ли альбом сборником песен
+        album = None
+        list_songs = None
+        if executor.name == user.name and executor.country == user.name:
+            album = AlbumSQLAlchemyRepository().get_album(
+                executor_name=user.name,
+                title="Сборник песен",
+                executor_id=executor.id,
+            )
+            list_songs = SongSQLAlchemyRepository().get_songs(album_id=album.id)
 
         await bot.send_message(
             chat_id=message.chat.id,
@@ -59,7 +73,7 @@ async def get_executors_information(message: Message):
         await message.answer(
             text=data_executor,
             reply_markup=get_albums_executors_button(
-                executor=executor, user_id=user.id
+                executor=executor, user=user, album=album, list_songs=list_songs
             ),
         )
     else:
@@ -87,11 +101,25 @@ async def get_executors_informati_when_you_press_the_button(call: CallbackQuery)
         forward=forward,
         back=back,
     )
-    data_executor = get_info_executors(executor=executor)
+    data_executor = get_info_executors(executor=executor, user=user)
+
+    # Проверяет является ли альбом сборником песен
+    album = None
+    list_songs = None
+    if executor.name == user.name and executor.country == user.name:
+        album = AlbumSQLAlchemyRepository().get_album(
+            executor_name=user.name,
+            title="Сборник песен",
+            executor_id=executor.id,
+        )
+        if album:
+            list_songs = SongSQLAlchemyRepository().get_songs(album_id=album.id)
 
     await bot.edit_message_text(
         text=data_executor,
-        reply_markup=get_albums_executors_button(executor=executor, user_id=user.id),
+        reply_markup=get_albums_executors_button(
+            executor=executor, user=user, album=album, list_songs=list_songs
+        ),
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
     )
@@ -118,7 +146,7 @@ async def get_album_songs(call: CallbackQuery):
     )
     list_songs = SongSQLAlchemyRepository().get_songs(album_id=album.id)
 
-    data_executor = get_info_executors(executor=executor)
+    data_executor = get_info_executors(executor=executor, user=user)
 
     album = album if move == "+" else None
     list_songs = list_songs if move == "+" else None
@@ -126,7 +154,7 @@ async def get_album_songs(call: CallbackQuery):
     await bot.edit_message_text(
         text=data_executor,
         reply_markup=get_albums_executors_button(
-            user_id=user.id,
+            user=user,
             executor=executor,
             album=album,
             list_songs=list_songs,
@@ -522,3 +550,4 @@ async def finish_delete_album(message: Message, state: FSMContext):
         await message.answer("Альбом успешно удален")
         await get_executors_information(message=message)
         await state.clear()
+

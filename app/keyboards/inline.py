@@ -5,20 +5,26 @@ from aiogram.types import InlineKeyboardButton
 
 from repository.executor import ExecutorSQLAlchemyRepository
 from repository.album import AlbumSQLAlchemyRepository
-from models import Executor
+from models import Executor, User
 
 
 def get_albums_executors_button(
     executor: Executor,
-    user_id: int,
+    user: User,
     album=None,
     list_songs=None,
 ):
     """Возвращает инлайн-клавиатуру спиcка альбомов исполнителя или с отдельным альбомом со списком песен."""
     inline_kb = InlineKeyboardBuilder()
 
+    collection = False
+    album_collection_songs = False
+    if executor.name == user.name and executor.country == user.name:
+        collection = True
+        album_collection_songs = True
+
     executors = ExecutorSQLAlchemyRepository().get_executors_is_user(
-        user_id=user_id,
+        user_id=user.id,
     )
     len_executors = len(executors)
     order = 0
@@ -33,6 +39,8 @@ def get_albums_executors_button(
         left_split = "*" * 20
         right_split = "*" * 20
         data = f"{left_split}{album.title} ({album.year}){right_split}\n"
+        if album_collection_songs:
+            data = f"{left_split}Песни из сборника{right_split}"
 
         inline_kb = InlineKeyboardBuilder()
         inline_kb.add(
@@ -60,43 +68,44 @@ def get_albums_executors_button(
                 )
             )
 
-    inline_kb.row(
-        InlineKeyboardButton(
-            text="🎵 Изменить Жанр Исполнителя 🎵",
-            callback_data=f"update_genre {executor.id}",
-        )
-    )
-    inline_kb.row(
-        InlineKeyboardButton(
-            text="🎵 Изменить Имя Исполнителя 🎵",
-            callback_data=f"сhange_name {executor.id}",
-        )
-    )
-    inline_kb.row(
-        InlineKeyboardButton(
-            text="🎵 Изменить Страну Исполнителя 🎵",
-            callback_data=f"change_country {executor.id}",
-        )
-    )
-    inline_kb.row(
-        InlineKeyboardButton(
-            text="🎸 Добавить Альбом 🎸", callback_data=f"add_album {executor.id}"
-        )
-    )
-
-    inline_kb.row(
-        InlineKeyboardButton(
-            text="😢 Удалить Исполнителя 😢",
-            callback_data=f"delete_executor {executor.id}",
-        )
-    )
-    if delete_album:
+    if not collection:
         inline_kb.row(
             InlineKeyboardButton(
-                text="😢 Удалить Aльбом 😢",
-                callback_data=f"delete_album {executor.id}_{album.id}",
+                text="🎵 Изменить Жанр Исполнителя 🎵",
+                callback_data=f"update_genre {executor.id}",
             )
         )
+        inline_kb.row(
+            InlineKeyboardButton(
+                text="🎵 Изменить Имя Исполнителя 🎵",
+                callback_data=f"сhange_name {executor.id}",
+            )
+        )
+        inline_kb.row(
+            InlineKeyboardButton(
+                text="🎵 Изменить Страну Исполнителя 🎵",
+                callback_data=f"change_country {executor.id}",
+            )
+        )
+        inline_kb.row(
+            InlineKeyboardButton(
+                text="🎸 Добавить Альбом 🎸", callback_data=f"add_album {executor.id}"
+            )
+        )
+
+        inline_kb.row(
+            InlineKeyboardButton(
+                text="😢 Удалить Исполнителя 😢",
+                callback_data=f"delete_executor {executor.id}",
+            )
+        )
+        if delete_album:
+            inline_kb.row(
+                InlineKeyboardButton(
+                    text="😢 Удалить Aльбом 😢",
+                    callback_data=f"delete_album {executor.id}_{album.id}",
+                )
+            )
 
     # Логика для подключения кнопок forward и back
     if len_executors == 1:

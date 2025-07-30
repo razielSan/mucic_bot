@@ -15,15 +15,17 @@ class SongSQLAlchemyRepository:
         album_id: int,
         executor_name: str,
         executor_album: str,
+        order=None,
     ):
         """Создание песен для альбома."""
         with db_helper.get_sesson() as session:
             try:
                 list_songs = []
-                for order, songs in enumerate(songs, start=1):
+                order = order if order else 1
+                for index, songs in enumerate(songs, start=order):
                     list_songs.append(
                         Song(
-                            order=order,
+                            order=index,
                             name=songs[1],
                             album_id=album_id,
                             file_id=songs[0],
