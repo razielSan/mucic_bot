@@ -7,7 +7,13 @@ def get_music_menu_button():
     reply_kb = ReplyKeyboardBuilder(
         [
             [
-                KeyboardButton(text="Добавить музыку"),
+                KeyboardButton(
+                    text="Добавить музыку (самостоятельно)"
+                ),
+                KeyboardButton(text="Добавить музыку (искать в сети)"),
+            ],
+            [
+                KeyboardButton(text="Добавить музыку в альбом"),
             ],
             [
                 KeyboardButton(text="Cписок исполнителей"),
@@ -60,4 +66,18 @@ def get_search_reply_button():
     reply_kb = ReplyKeyboardBuilder()
     reply_kb.row(KeyboardButton(text="Отмена"))
 
+    return reply_kb.as_markup(resize_keyboard=True)
+
+
+def get_buttons_is_add_music_newtork(
+    all_album=False,
+    forward=False,
+):
+    """Возвращает кнопки для выбора всех альбомов и отмены поиска."""
+    reply_kb = ReplyKeyboardBuilder()
+    if all_album:
+        reply_kb.row(KeyboardButton(text="Все"))
+    if forward:
+        reply_kb.row(KeyboardButton(text="Дальше"))
+    reply_kb.row(KeyboardButton(text="Отмена"))
     return reply_kb.as_markup(resize_keyboard=True)

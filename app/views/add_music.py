@@ -49,18 +49,11 @@ music = MusicSong(
 )
 
 
-@router.message(StateFilter(None), F.text == "Добавить музыку")
+@router.message(StateFilter(None), F.text == "Добавить музыку (скидывать музыку самостоятельно)")
 async def start_add_music(message: Message, state: FSMContext):
     """Начало работы FSM AddMusic."""
     chat_id = message.chat.id
     message_id = message.message_id
-
-    # Создание жанра для обновления жанров
-    genre = GengreSQLAlchemyRepository().get_genres(["Жанр Для Обновления Жанров"])
-    if not genre:
-        genre = GengreSQLAlchemyRepository().create_one_genre(
-            title="Жанр Для Обновления Жанров"
-        )
 
     await bot.delete_message(chat_id=chat_id, message_id=message_id)
 

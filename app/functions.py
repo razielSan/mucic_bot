@@ -1,5 +1,6 @@
-from models import Executor, User
+from typing import List
 
+from models import Executor, User
 from repository.executor import ExecutorSQLAlchemyRepository
 from repository.genre import GengreSQLAlchemyRepository
 
@@ -49,3 +50,26 @@ def get_executor_is_button(
     else:
         order = order + 1 if forward else order - 1
     return executors_list[order - 1]
+
+
+def get_info_is_bot():
+    """Возвращает описание умений бота."""
+
+    data = (
+        "Описание умений бота\n\n\start - Возвращает главное меню бота\n\n"
+        "Добавить музыку - Здесь вы добавляете музыку в музыкальный архив\n\n"
+        "Cписок исполнителей - Выводит исполнителей в алфавитном порядке."
+        "Здесь вы можете прослушивать музыку и совершать все действия по редактированию исполнителей."
+        "Если нет исполнителей функция недоступна\n\n"
+        "Поиск - Здесь вы можете отыскать исполнителя по жанру, имени, стране или вывести всех исполнителей сразу."
+        "Если нет исполнителей функция недоступна"
+    )
+    return data
+
+
+def get_list_albums_executors(list_albums: List[str]):
+    """Возвращает строку со всеми альбомами исполнителя."""
+    albums = []
+    for index, data in enumerate(list_albums, start=1):
+        albums.append(f"{index}. {data}")
+    return "\n".join(albums)

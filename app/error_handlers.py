@@ -5,9 +5,9 @@ def cheak_data_is_number(data: str, year=None, quantity=None):
         data = int(data)
         if data > 0:
             if quantity:
-                if data > 50:
+                if data > 30:
                     print(quantity)
-                    return (None, {"error": f"{result} должно быть меньше или равно 50"})
+                    return (None, {"error": f"{result} должно быть меньше или равно 30"})
             return (int(data), {"error": None})
         else:
             return (None, {"error": f"{result} должен быть положительным числом"})

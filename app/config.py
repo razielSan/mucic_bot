@@ -10,10 +10,18 @@ class Settings(BaseSettings):
 
     TOKEN: str
     SQLITE_BASE: str
+    TOKEN_VK: str
+    CLIENT_ID: str
+    CLIENT_SECRET: str
+    MUSIC_PATH: str
     bot_command: List = [
         BotCommand(
             command="/start",
             description="Меню бота",
+        ),
+        BotCommand(
+            command="/help",
+            description="Описание умений бота",
         ),
     ]
 

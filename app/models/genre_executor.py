@@ -30,6 +30,10 @@ class Executor(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     country: Mapped[str]
+    img: Mapped[str] = mapped_column(
+        default="Здесь скоро появится изображение",
+        server_default="Здесь скоро появится изображение",
+    )
 
     user_id: Mapped[int] = mapped_column(
         ForeignKey(

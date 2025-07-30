@@ -16,6 +16,7 @@ class AlbumSQLAlchemyRepository:
         executor_name: str,
         executor_id: int,
         executor_country: str,
+        img="Здесь скоро появится изображение",
     ):
         """Создание альбома для исполнителя."""
         with db_helper.get_sesson() as session:
@@ -26,6 +27,7 @@ class AlbumSQLAlchemyRepository:
                     executor_name=executor_name,
                     executor_id=executor_id,
                     executor_country=executor_country,
+                    img=img,
                 )
                 session.add(album)
                 session.commit()

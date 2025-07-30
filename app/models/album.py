@@ -18,6 +18,10 @@ class Album(Base):
     )
     title: Mapped[str]
     year: Mapped[int]
+    img: Mapped[str] = mapped_column(
+        default="Здесь скоро появится изображение",
+        server_default="Здесь скоро появится изображение",
+    )
 
     executor_id: Mapped[int] = mapped_column(
         ForeignKey("executor.id", ondelete="CASCADE")

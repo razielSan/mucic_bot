@@ -143,28 +143,43 @@ async def search_executor(message: Message, state: FSMContext):
                 text="Поиск завершен",
                 reply_markup=ReplyKeyboardRemove(),
             )
-            await message.answer(
-                text="Список найденных исполнителей",
-                reply_markup=get_button_is_search_executor(
-                    executors_list=executors,
-                ),
-            )
+            if not executors:
+                await message.answer("Такого исполнителя нет в музыкальном архиве")
+                await search(message=message)
+            else:
+                await message.answer(
+                    text="Список найденных исполнителей",
+                    reply_markup=get_button_is_search_executor(
+                        executors_list=executors,
+                    ),
+                )
         elif executor_country:
-            executors = ExecutorSQLAlchemyRepository().get_executors_by_country(
-                country=mess, user_id=user.id
+            executors_list = ExecutorSQLAlchemyRepository().get_executors_is_user(
+                user_id=user.id
             )
+            executors = []
+            for executor in executors_list:
+                if executor.country.lower() == mess.lower():
+                    executors.append(executor)
+
             await state.clear()
             await bot.send_message(
                 chat_id=message.chat.id,
                 text="Поиск завершен",
                 reply_markup=ReplyKeyboardRemove(),
             )
-            await message.answer(
-                text="Список найденных исполнителей",
-                reply_markup=get_button_is_search_executor(
-                    executors_list=executors,
-                ),
-            )
+            if not executors:
+                await message.answer(
+                    "C такой страной нет исполнителя в музыкальном архиве"
+                )
+                await search(message=message)
+            else:
+                await message.answer(
+                    text="Список найденных исполнителей",
+                    reply_markup=get_button_is_search_executor(
+                        executors_list=executors,
+                    ),
+                )
         elif genre:
             executors = ExecutorSQLAlchemyRepository().get_executors_is_user(
                 user_id=user.id
@@ -172,7 +187,7 @@ async def search_executor(message: Message, state: FSMContext):
             list_executors = []
             for executor in executors:
                 for g in executor.genres:
-                    if g.title == mess:
+                    if g.title.lower() == mess.lower():
                         list_executors.append(executor)
             await state.clear()
             await bot.send_message(
@@ -180,12 +195,19 @@ async def search_executor(message: Message, state: FSMContext):
                 text="Поиск завершен",
                 reply_markup=ReplyKeyboardRemove(),
             )
-            await message.answer(
-                text="Список найденных исполнителей",
-                reply_markup=get_button_is_search_executor(
-                    executors_list=list_executors,
-                ),
-            )
+
+            if not list_executors:
+                await message.answer(
+                    "В таком жанре нет исполнителей в музыкальном архиве"
+                )
+                await search(message=message)
+            else:
+                await message.answer(
+                    text="Список найденных исполнителей",
+                    reply_markup=get_button_is_search_executor(
+                        executors_list=list_executors,
+                    ),
+                )
 
 
 @router.callback_query(F.data.startswith("input "))

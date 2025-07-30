@@ -4,6 +4,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from aiogram.types.input_file import FSInputFile
 
 from repository.executor import ExecutorSQLAlchemyRepository
 from repository.album import AlbumSQLAlchemyRepository
@@ -158,7 +159,18 @@ async def get_song_play(call: CallbackQuery):
     for song in album.songs:
         if song.order == int(order):
             song_data = song
-    await call.message.answer_audio(audio=song_data.file_id, caption=song_data.name)
+
+    # Проверяет является ли аудио загруженным в телеграме или загружать из сервера
+    if song_data.file_id.startswith("D:\\"):
+        await call.message.answer_audio(
+            audio=FSInputFile(path=song_data.file_id),
+            caption=song_data.name,
+        )
+    else:
+        await call.message.answer_audio(
+            audio=song_data.file_id,
+            caption=song_data.name,
+        )
 
 
 # Логика для обновления жанра
@@ -233,25 +245,8 @@ async def finish_update_genre(message: Message, state: FSMContext):
     )
     for genre in genres_list_update:
         GenreExecutorSQLAlchemyRepository().executor_genre(
-            executor_id=data["executor_id"],
-            genre_id=genre.id
+            executor_id=data["executor_id"], genre_id=genre.id
         )
-
-    # genre_lists_base = GengreSQLAlchemyRepository().get_genres(
-    #     title_list=["Жанр Для Обновления Жанров"]
-    # )
-
-    # ExecutorSQLAlchemyRepository().update_genre(
-    #     executor_id=data["executor_id"],
-    #     user_id=user.id,
-    #     list_genres=genre_lists_base,
-    # )
-
-    # ExecutorSQLAlchemyRepository().update_genre(
-    #     executor_id=data["executor_id"],
-    #     user_id=user.id,
-    #     list_genres=genres_list_update,
-    
 
     await message.answer(
         "Жанр успешно изменен",

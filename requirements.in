@@ -6,5 +6,5 @@ alembic
 
 pycodestyle
 pydocstyle
-flake8
 black
+flake8
