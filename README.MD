@@ -6,10 +6,14 @@
 
 Требования
 
+
+
 python 3.8 и выше
 
 
 Установить
+
+
 
 git clone https://github.com/razielSan/mucic_bot.git
 cd mucic_bot
@@ -17,6 +21,8 @@ pip install -r requirements.tx
 
 
 Использование
+
+
 
 Создайте в директории mucic_bot/app/ файл .env
 
@@ -50,9 +56,13 @@ D:\Media\Music\Другое\Тараканы (Москва)\(1992)-Duty free son
 
 Запуск программы
 
+
+
+
 В консоли
 
 Перейти в директорию mucic_bot/app
 
 cd mucic_bot/app
 app.py
+
