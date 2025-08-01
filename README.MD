@@ -17,7 +17,7 @@ python 3.8 и выше
 
 git clone https://github.com/razielSan/mucic_bot.git
 cd mucic_bot
-pip install -r requirements.tx
+pip install -r requirements.txt
 
 
 Использование
