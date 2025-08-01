@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import List
 
 from aiogram import Router, F
-from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, ContentType
@@ -16,6 +15,7 @@ from repository.album import AlbumSQLAlchemyRepository
 from repository.song import SongSQLAlchemyRepository
 from repository.genre import GengreSQLAlchemyRepository
 from repository.user import UserSQLAlchemyRepository
+from config import settings
 
 
 router = Router(name=__name__)
@@ -61,7 +61,7 @@ async def start_add_collection_song(message: Message, state: FSMContext):
     await state.set_state(AddCollectionSong.list_songs)
     await state.update_data(list_songs=[])
     await state.set_state(AddCollectionSong.title)
-    await state.update_data(title="Сборник песен")
+    await state.update_data(title=settings.AlBUM_TITLE_COLLECTION)
     await state.set_state(AddCollectionSong.year)
     await state.update_data(year=-1)
     await state.set_state(AddCollectionSong.quantity)
@@ -85,7 +85,7 @@ async def cancel_add_collection_song(message: Message, state: FSMContext):
 
 
 @router.message(AddCollectionSong.quantity, F.text)
-async def add_collection_(message: Message, state: FSMContext):
+async def add_collection_quantity(message: Message, state: FSMContext):
     """FSM AddCollectionSong.Просит у пользователя скинуть песни для добавления в сборник песен."""
     quantity, mess = cheak_data_is_number(data=message.text, quantity=30)
     if not quantity:
@@ -103,7 +103,7 @@ async def add_collection_(message: Message, state: FSMContext):
 
 
 @router.message(AddCollectionSong.song)
-async def add_collection_(message: Message, state: FSMContext):
+async def finish_add_collection_song(message: Message, state: FSMContext):
     """FSM AddCollectionSong.Добавляет песни в сборник."""
 
     async def task():
@@ -132,7 +132,6 @@ async def add_collection_(message: Message, state: FSMContext):
 
         await asyncio.gather(task())
         data = await state.get_data()
-        print(data)
         if data["counter"] > 30:
             await state.clear()
             await message.answer("Количество песен не должно превышать 30")
@@ -149,6 +148,13 @@ async def add_collection_(message: Message, state: FSMContext):
             user = UserSQLAlchemyRepository().get_user_by_telegram(
                 telegram=message.chat.id,
             )
+
+            if not user:
+                UserSQLAlchemyRepository().create_user(
+                    telegram=message.chat.id,
+                    name=message.from_user.first_name,
+                )
+                user = UserSQLAlchemyRepository().get_user_by_telegram(telegram=message.chat.id)
 
             executor = ExecutorSQLAlchemyRepository().get_executor_by_name_and_country(
                 name=user.name, country=user.name, user_id=user.id

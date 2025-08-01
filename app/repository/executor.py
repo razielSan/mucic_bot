@@ -165,13 +165,7 @@ class ExecutorSQLAlchemyRepository:
                     )
                     .first()
                 )
-                print("ok")
-                print(list_genres)
-                print(executor.genres)
-                executor.genres.clear()
                 executor.genres = list_genres
-                print(executor.genres)
-                print("no")
                 session.commit()
                 return True
             except Exception as err:

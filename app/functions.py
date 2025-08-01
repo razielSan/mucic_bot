@@ -2,8 +2,6 @@ from typing import List
 
 from models import Executor, User
 from repository.executor import ExecutorSQLAlchemyRepository
-from repository.genre import GengreSQLAlchemyRepository
-from repository.user import UserSQLAlchemyRepository
 
 
 def get_info_executors(executor: Executor, user: User):
@@ -14,9 +12,7 @@ def get_info_executors(executor: Executor, user: User):
         info = "🎧 Сборник песен  🎧"
     else:
         executors = [genre.title for genre in executor.genres]
-        data = (
-            f"🎧 {executor.name} 🎧\n\n🎧 Страна: {executor.country} 🎧\nЖанры: {executors[0]}"
-        )
+        data = f"🎧 {executor.name} 🎧\n\n🎧 Страна: {executor.country} 🎧\nЖанры: {executors[0]}"
         data_list.append(data)
         data_list.extend(executors[1:])
         data_executor = ", ".join(data_list).strip(",")
@@ -60,10 +56,14 @@ def get_info_is_bot():
 
     data = (
         "Описание умений бота\n\n\start - Возвращает главное меню бота\n\n"
-        "Добавить музыку - Здесь вы добавляете музыку в музыкальный архив\n\n"
-        "Cписок исполнителей - Выводит исполнителей в алфавитном порядке."
+        "Добавить музыку (самостоятельно) - Здесь вы добавляете музыку в музыкальный архив\n\n"
+        "Добавить музыку (искать в сети) - Здесь вы ищете музыку в интернете\n\n"
+        "Добавить музыку в сборник песен - Здесь вы можете сформировать свой сборник для отдельных песен\n\n"
+        "Сборник песен - Выводит песни из сборника песен.Можете прослушивать их,удалять песни, добавлять песни\n\n"
+        "Музыкальный архив - Выводит исполнителей в алфавитном порядке."
         "Здесь вы можете прослушивать музыку и совершать все действия по редактированию исполнителей."
         "Если нет исполнителей функция недоступна\n\n"
+        "Список исполнителей - Выводит на экран всех исполнителей которые у вас есть\n\n"
         "Поиск - Здесь вы можете отыскать исполнителя по жанру, имени, стране или вывести всех исполнителей сразу."
         "Если нет исполнителей функция недоступна"
     )
@@ -76,3 +76,21 @@ def get_list_albums_executors(list_albums: List[str]):
     for index, data in enumerate(list_albums, start=1):
         albums.append(f"{index}. {data}")
     return "\n".join(albums)
+
+
+def get_executors_is_users(
+    list_executor: List[Executor],
+    user: User,
+):
+    """Возвращает список всех исполнителей которые есть у пользователя."""
+    for index, executor in enumerate(list_executor):
+        if executor.name == user.name and executor.country == user.name:
+            list_executor.pop(index)
+    data = [executor.name for executor in list_executor]
+
+    data.sort()
+    if data:
+        executors = "\n".join(data)
+    else:
+        executors = "У вас нет исполнителей в музыкальном архиве"
+    return executors

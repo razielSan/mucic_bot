@@ -1,10 +1,9 @@
 import os
 
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-from aiogram.types.input_file import FSInputFile
 
 from config import settings
 from extensions import bot
@@ -81,9 +80,7 @@ async def add_executor_network(message: Message, state: FSMContext):
         data = data[-1]
         if executor.lower() == data.split("(")[0].strip().lower():
             path = dirpath
-            print("0k", path)
             break
-    print("*" * 10)
     if path:
         # Проходися по исполнителю и добываем имя исполнителя, страну, список альбомов и путь до альбомов
         index = 0
@@ -112,8 +109,6 @@ async def add_executor_network(message: Message, state: FSMContext):
         await state.update_data(full_path=full_path)
 
         data = await state.get_data()
-
-        albums = get_list_albums_executors(list_albums=list_albums)
 
         await message.answer(f"Найденный исполнитель\n\n{executor} ({country})")
         await bot.send_message(
@@ -163,7 +158,7 @@ async def add_country_handler(message: Message, state: FSMContext):
     await bot.send_message(
         chat_id=message.chat.id,
         text="Введите номера альбомов "
-        "которые хотите скачать через пробел в формате\n\n0.1.4\n\n"
+        "которые хотите в формате\n\n0.1.4\n\n"
         "Нажмите 'Все' чтобы скачать все альбомы",
         reply_markup=get_buttons_is_add_music_newtork(all_album=True),
     )
@@ -208,7 +203,6 @@ async def add_full_path(message: Message, state: FSMContext):
     list_songs = []
     for album in list_albums:
         path = "\\".join([full_path, album])
-        print(path)
         for dirpath, dirname, filename in os.walk(top=path):
             list_songs.append([dirpath, filename])
 
@@ -216,17 +210,19 @@ async def add_full_path(message: Message, state: FSMContext):
         telegram=message.chat.id,
     )
 
+    if not user:
+        UserSQLAlchemyRepository().create_user(telegram=message.chat.id, name=message.from_user.first_name)
+        user = UserSQLAlchemyRepository().get_user_by_telegram(telegram=message.chat.id)
+
     search_executor = ExecutorSQLAlchemyRepository().get_executor_by_name_and_country(
         user_id=user.id,
         name=executor,
         country=country,
     )
-    print(search_executor, "1111111111111111111111")
 
     # Создает исполнителя с жанром если нет такого
     if not search_executor:
         list_genres = GengreSQLAlchemyRepository().get_genres(title_list=[genre])
-        print(genre, 11111)
         if not list_genres:
             GengreSQLAlchemyRepository().create_one_genre(title=genre)
         list_genres = GengreSQLAlchemyRepository().get_genres(title_list=[genre])
@@ -246,53 +242,28 @@ async def add_full_path(message: Message, state: FSMContext):
 
     order = 0  #
     list_order = []
-    print(list_number, "dddd")
 
     # Проходимся по листу с песнями
     for dirpath, filename in list_songs:
         order += 1
         if order in list_number:
             data = dirpath.split("\\")[-1]
-            album_year, album_title = data.split(")")
-            album_year = album_year.strip("( ")
-            album_title = album_title.strip(" -")
-            print(order)
-            print(album_year)
-            print(album_title)
-            print("*" * 10)
-            print(executor)
-            print(country)
-            print("*" * 10)
-
-            print(executor, "OKKKKKKKKKKKK")
+            executor_data = data.split(')')
+            album_year = executor_data[0].strip("( ")
+            album_title = "".join(executor_data[1:]).strip(" -")
             songs_list = []
             songs_jpg = []
 
             # Добавляем в массивы данные содержащие .mp3 и .jpg а также путь до песни
             for name in filename:
-                if (
-                    name.endswith(".mp3")
-                    or name.endswith(".MP3")
-                    or name.endswith(".Mp3")
-                    or name.endswith(".wav")
-                    or name.endswith(".m4a")
-                    or name.endswith(".ogg")
-                    or name.endswith(".flac")
-                ):
+                data = name.split(".")[-1].lower()
+                if data in settings.MUSIC_FORMAT_LIST:
                     song_path = "\\".join([dirpath, name])
                     songs_list.append([song_path, name])
-                elif (
-                    name.endswith(".jpg")
-                    or name.endswith(".jpeg")
-                    or name.endswith(".JPG")
-                    or name.endswith(".JPEG")
-                    or name.endswith(".gif")
-                    or name.endswith(".png")
-                    or name.endswith(".bmp")
-                    or name.endswith(".PNG")
-                ):
+                elif data in settings.IMG_FORMAT_LIST:
                     img = "\\".join([dirpath, name])
                     songs_jpg.append(img)
+
             img = "Здесь скоро появится изображение"
             if songs_jpg:
                 img = songs_jpg[0]

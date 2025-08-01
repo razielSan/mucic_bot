@@ -23,7 +23,7 @@ class GenreExecutor(Base):
 
 
 class Executor(Base):
-    """Модель для исплнителя песен."""
+    """Модель для исполнителя песен."""
 
     __tablename__ = "executor"
 
@@ -85,4 +85,5 @@ class Gengre(Base):
     )
 
     def __repr__(self):
+        """Представление модели жанра."""
         return str(self.title)

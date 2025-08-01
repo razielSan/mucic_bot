@@ -110,7 +110,7 @@ async def search_name(call: CallbackQuery, state: FSMContext):
         return
 
     await call.message.answer(
-        text=f"Поиск чувствителен к регистру.Бот различает между заглавными и строчными буквами\n\nНапишите {search} исполнителя которого хотите найти или нажмите 'Отмена'",
+        text=f"Напишите {search} исполнителя которого хотите найти или нажмите 'Отмена'",
         reply_markup=get_search_reply_button(),
     )
 

@@ -74,3 +74,32 @@ class SongSQLAlchemyRepository:
                 session.rollback()
                 print(err)
                 return False
+
+    def delete_songs(self, album_id: int, order_songs: List[int]):
+        """Удаляет песни из альбома."""
+        with db_helper.get_sesson() as session:
+            try:
+                session.query(Song).filter(
+                    Song.order.in_(order_songs),
+                    Song.album_id == album_id,
+                ).delete()
+                session.commit()
+                return True
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False
+
+    def delete_all_songs(self, album_id: int):
+        """Удаляет все песни из альбома."""
+        with db_helper.get_sesson() as session:
+            try:
+                session.query(Song).filter(
+                    Song.album_id == album_id,
+                ).delete()
+                session.commit()
+                return True
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False

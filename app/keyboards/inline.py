@@ -5,7 +5,7 @@ from aiogram.types import InlineKeyboardButton
 
 from repository.executor import ExecutorSQLAlchemyRepository
 from repository.album import AlbumSQLAlchemyRepository
-from models import Executor, User
+from models import Executor, User, Song, Album
 
 
 def get_albums_executors_button(
@@ -40,16 +40,18 @@ def get_albums_executors_button(
         right_split = "*" * 20
         data = f"{left_split}{album.title} ({album.year}){right_split}\n"
         if album_collection_songs:
-            data = f"{left_split}Песни из сборника{right_split}"
+            data = None
 
         inline_kb = InlineKeyboardBuilder()
-        inline_kb.add(
-            InlineKeyboardButton(
-                text=data,
-                callback_data=f"album {album.id}_{executor.id}_-",
+
+        if data:
+            inline_kb.add(
+                InlineKeyboardButton(
+                    text=data,
+                    callback_data=f"album {album.id}_{executor.id}_-",
+                )
             )
-        )
-        for song in list_songs:
+        for song in list_songs[0:30]:
             inline_kb.row(
                 InlineKeyboardButton(
                     text=f"{song.order}. {song.name}",
@@ -177,4 +179,111 @@ def get_button_is_search_executor(
                 callback_data=f"input {executor.id}",
             )
         )
+    return inline_kb.as_markup(resize_keyboard=True)
+
+
+def get_button_is_collection_song(
+    songs_list: List[Song],
+    executor: Executor,
+    album: Album,
+    order=0,
+    back=None,
+    forward=None,
+):
+    """Возвращает кнопки со списком песен из сборника песен."""
+    inline_kb = InlineKeyboardBuilder()
+
+    if order == 0:
+        for song in songs_list[:30]:
+            inline_kb.row(
+                InlineKeyboardButton(
+                    text=f"{song.order}.{song.name}",
+                    callback_data=f"song {executor.id}_{song.album_id}_{song.order}",
+                )
+            )
+    else:
+        if forward:
+            next_order = order + 30
+        elif back:
+            next_order = order - 30
+            order = order - 60
+            print(order, "back")
+        print(order, "true")
+        for song in songs_list[order : order + 30]:
+            inline_kb.row(
+                InlineKeyboardButton(
+                    text=f"{song.order}.{song.name}",
+                    callback_data=f"song {executor.id}_{song.album_id}_{song.order}",
+                )
+            )
+
+    inline_kb.row(
+        InlineKeyboardButton(
+            text=f"🎸 Добавить Песни 🎸",
+            callback_data=f"add_songs {executor.id}_{album.id}",
+        )
+    )
+
+    if songs_list:
+        inline_kb.row(
+            InlineKeyboardButton(
+                text=f"😢 Удалить Песни 😢",
+                callback_data=f"delete_songs {executor.id}_{album.id}",
+            )
+        )
+
+        if order == 0 and len(songs_list) > 30:
+            inline_kb.row(
+                InlineKeyboardButton(
+                    text=f"Вперед 👉",
+                    callback_data=f"forward_songs {executor.id}_{album.id}_30",
+                )
+            )
+        else:
+            if forward:
+                data = len(songs_list) - next_order
+                print(data)
+                if data < 0:
+                    inline_kb.row(
+                        InlineKeyboardButton(
+                            text=f"👈 Назад",
+                            callback_data=f"back_songs {executor.id}_{album.id}_{next_order}",
+                        )
+                    )
+                else:
+                    inline_kb.row(
+                        InlineKeyboardButton(
+                            text=f"👈 Назад",
+                            callback_data=f"back_songs {executor.id}_{album.id}_{next_order}",
+                        )
+                    )
+                    inline_kb.add(
+                        InlineKeyboardButton(
+                            text=f"Вперед 👉",
+                            callback_data=f"forward_songs {executor.id}_{album.id}_{next_order}",
+                        )
+                    )
+            if back:
+                print(next_order, order)
+                if next_order == 0:
+                    inline_kb.add(
+                        InlineKeyboardButton(
+                            text=f"Вперед 👉",
+                            callback_data=f"forward_songs {executor.id}_{album.id}_{next_order}",
+                        )
+                    )
+                else:
+                    inline_kb.row(
+                        InlineKeyboardButton(
+                            text=f"👈 Назад",
+                            callback_data=f"back_songs {executor.id}_{album.id}_{next_order}",
+                        )
+                    )
+                    inline_kb.add(
+                        InlineKeyboardButton(
+                            text=f"Вперед 👉",
+                            callback_data=f"forward_songs {executor.id}_{album.id}_{next_order}",
+                        )
+                    )
+
     return inline_kb.as_markup(resize_keyboard=True)

@@ -239,6 +239,7 @@ async def add_songs(message: Message, state: FSMContext):
                 return
             executor = data["executor"]
             country = data["country"]
+
             # Создаем исполнителя
             list_genres = data["genre"]
             user = UserSQLAlchemyRepository().get_user_by_telegram(
@@ -291,7 +292,6 @@ async def add_songs(message: Message, state: FSMContext):
                     executor_album=album.title,
                 )
                 if songs:
-                    print(data)
                     await state.clear()
                     await message.answer("Музыка успешно добавлена")
                     await bot.send_message(

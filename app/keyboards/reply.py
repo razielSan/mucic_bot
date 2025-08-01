@@ -1,6 +1,8 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types.keyboard_button import KeyboardButton
 
+from config import settings
+
 
 def get_music_menu_button():
     """Возвращает кнопки главного меню бота."""
@@ -14,10 +16,11 @@ def get_music_menu_button():
             ],
             [
                 KeyboardButton(text="Добавить музыку в сборник песен"),
-                KeyboardButton(text="Сборник песен"),
+                KeyboardButton(text=settings.AlBUM_TITLE_COLLECTION),
             ],
             [
-                KeyboardButton(text="Cписок исполнителей"),
+                KeyboardButton(text="Музыкальный архив"),
+                KeyboardButton(text="Список исполнителей"),
             ],
             [
                 KeyboardButton(text="Поиск"),
@@ -28,11 +31,13 @@ def get_music_menu_button():
     return reply_kb.as_markup(resize_keyboard=True)
 
 
-def get_add_music_button(country=False):
+def get_add_music_button(country=False, all_song=False):
     """Возвращает кнопки для add_music."""
     reply_kb = ReplyKeyboardBuilder()
     if country:
         reply_kb.row(KeyboardButton(text="Неизвестно"))
+    if all_song:
+        reply_kb.row(KeyboardButton(text="Все"))
     reply_kb.row(KeyboardButton(text="Отмена"))
 
     return reply_kb.as_markup(resize_keyboard=True)
