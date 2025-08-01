@@ -9,6 +9,9 @@ def get_music_menu_button():
     reply_kb = ReplyKeyboardBuilder(
         [
             [
+                KeyboardButton(text="Музыкальный архив"),
+            ],
+            [
                 KeyboardButton(
                     text="Добавить музыку (самостоятельно)"
                 ),
@@ -19,7 +22,6 @@ def get_music_menu_button():
                 KeyboardButton(text=settings.AlBUM_TITLE_COLLECTION),
             ],
             [
-                KeyboardButton(text="Музыкальный архив"),
                 KeyboardButton(text="Список исполнителей"),
             ],
             [

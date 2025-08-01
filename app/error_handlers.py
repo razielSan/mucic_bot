@@ -8,7 +8,6 @@ def cheak_data_is_number(data: str, year=None, quantity=None, collection=None):
         if data > 0:
             if quantity:
                 if data > quantity:
-                    print(quantity)
                     return (None, {"error": f"{result} должно быть меньше или равно {quantity}"})
             return (int(data), {"error": None})
         else:

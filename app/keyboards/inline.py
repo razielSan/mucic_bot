@@ -207,8 +207,6 @@ def get_button_is_collection_song(
         elif back:
             next_order = order - 30
             order = order - 60
-            print(order, "back")
-        print(order, "true")
         for song in songs_list[order : order + 30]:
             inline_kb.row(
                 InlineKeyboardButton(
@@ -242,7 +240,6 @@ def get_button_is_collection_song(
         else:
             if forward:
                 data = len(songs_list) - next_order
-                print(data)
                 if data < 0:
                     inline_kb.row(
                         InlineKeyboardButton(
@@ -264,7 +261,6 @@ def get_button_is_collection_song(
                         )
                     )
             if back:
-                print(next_order, order)
                 if next_order == 0:
                     inline_kb.add(
                         InlineKeyboardButton(
