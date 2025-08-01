@@ -29,15 +29,12 @@ pip install -r requirements.txt
 В файле .env создайте
 
 TOKEN:Токен_Вашего_Телеграм_Бота
+SQLITE_BASE:sqlite:///music_play.db
+MUSIC_PATH:Путь_До_Ваших_Музыкальных_Файлов
 
 Пример
 
 TOKEN:8061082875:CCCCcmcSoIcr3o5nnCCpM6XUYKEj3gNXlk8
-
-SQLITE_BASE:sqlite:///music_play.db
-
-
-MUSIC_PATH:Путь_До_Ваших_Музыкальных_Файлов
 
 Пример
 
