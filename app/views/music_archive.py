@@ -235,7 +235,7 @@ async def start_update_genre(call: CallbackQuery, state: FSMContext):
 @router.message(UpdateGenre.genre_list, F.text == "<Отмена>")
 async def genre_cancel_handler(message: Message, state: FSMContext):
     """Отмена обновления жанра."""
-    current_state = state.get_state()
+    current_state = await state.get_state()
     if current_state is None:
         return
 

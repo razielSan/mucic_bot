@@ -134,7 +134,7 @@ async def handler_delete_songs(call: CallbackQuery, state: FSMContext):
 
 @router.message(DeleteSongsCollectionSong.song, F.text == "Отмена")
 async def cancel_delete_songs_handler(message: Message, state: FSMContext):
-    current_state = state.get_state()
+    current_state = await state.get_state()
 
     if current_state is None:
         return

@@ -31,7 +31,6 @@ async def get_list_executors(message: Message):
     )
 
     if executor_list:
-        print(executor_list, 2)
         data = get_executors_is_users(list_executor=executor_list, user=user,)
         await message.answer(f"{data}")
     else:
