@@ -2,9 +2,3 @@ pydantic_settings
 pydantic==2.6.1
 aiogram==3.13.1
 sqlalchemy
-alembic
-
-pycodestyle
-pydocstyle
-black
-flake8
