@@ -27,7 +27,7 @@ from config import settings
 router = Router(name=__name__)
 
 
-@router.message(F.text == "Музыкальный архив")
+@router.message(F.text == "🎼 Музыкальный архив 🎼")
 async def get_executors_information(message: Message):
     """Возвращает информацию о исполнителе."""
     await bot.delete_message(

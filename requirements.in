@@ -2,3 +2,11 @@ pydantic_settings
 pydantic==2.6.1
 aiogram==3.13.1
 sqlalchemy
+requests
+beautifulsoup4
+lxml
+
+black
+pycodestyle
+pydocstyle
+flake8

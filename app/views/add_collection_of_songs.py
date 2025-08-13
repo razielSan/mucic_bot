@@ -46,7 +46,7 @@ music = MusicSong(
 )
 
 
-@router.message(F.text == "Добавить музыку в сборник песен")
+@router.message(F.text == "💾 Добавить музыку в сборник песен 💾")
 async def start_add_collection_song(message: Message, state: FSMContext):
     """FSM AddCollectionSong.Просит у пользователя ввести количество песен которые он хочет скинуть."""
 

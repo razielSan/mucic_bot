@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 
 from repository.user import UserSQLAlchemyRepository
 from repository.executor import ExecutorSQLAlchemyRepository
@@ -9,7 +9,7 @@ from functions import get_executors_is_users
 router = Router(name=__name__)
 
 
-@router.message(F.text == "Список исполнителей")
+@router.message(F.text == "🎸 Список исполнителей 🎸")
 async def get_list_executors(message: Message):
     """Вывыдит список исполнителей которые есть у пользователя."""
 
@@ -31,7 +31,13 @@ async def get_list_executors(message: Message):
     )
 
     if executor_list:
-        data = get_executors_is_users(list_executor=executor_list, user=user,)
-        await message.answer(f"{data}")
+        data = get_executors_is_users(
+            list_executor=executor_list,
+            user=user,
+        )
+        await message.answer(
+            f"{data}",
+            reply_markup=ReplyKeyboardRemove(),
+        )
     else:
         await message.answer("У вас нет исполнителей в музыкальном архиве")

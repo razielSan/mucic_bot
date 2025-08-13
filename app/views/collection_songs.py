@@ -1,3 +1,5 @@
+import os
+
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -19,7 +21,7 @@ from views.add_collection_of_songs import start_add_collection_song
 router = Router(name=__name__)
 
 
-@router.message(F.text == settings.AlBUM_TITLE_COLLECTION)
+@router.message(F.text == f"🎶 {settings.AlBUM_TITLE_COLLECTION} 🎶")
 async def get_collection_songs(message: Message):
     """Показывает пользователю сборник песен."""
 
@@ -134,6 +136,7 @@ async def handler_delete_songs(call: CallbackQuery, state: FSMContext):
 
 @router.message(DeleteSongsCollectionSong.song, F.text == "Отмена")
 async def cancel_delete_songs_handler(message: Message, state: FSMContext):
+    """Работа с FSM DeleteSongsCollectionSong.Отменяет все действия."""
     current_state = await state.get_state()
 
     if current_state is None:
@@ -150,6 +153,7 @@ async def cancel_delete_songs_handler(message: Message, state: FSMContext):
 
 @router.message(DeleteSongsCollectionSong.song, F.text)
 async def finish_delete_songs(message: Message, state: FSMContext):
+    """Работа с FSM DeleteSongsCollectionSong. Удаляет выбранные пользователем песни."""
     all_song = False
     if message.text == "Все":
         all_song = True
@@ -182,6 +186,13 @@ async def finish_delete_songs(message: Message, state: FSMContext):
         executor_id=executor.id,
     )
 
+    songs_list = SongSQLAlchemyRepository().get_songs_by_order(
+        album_id=album.id,
+        order_songs=list_number_songs,
+    )
+    for song in songs_list:
+        if song.file_id.find(settings.HITMOTOP_PATH) != -1:
+            os.remove(song.file_id)
     if all_song:
         SongSQLAlchemyRepository().delete_all_songs(album_id=album.id)
     else:

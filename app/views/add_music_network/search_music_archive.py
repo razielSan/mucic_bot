@@ -35,7 +35,7 @@ class AddMusicNetwork(StatesGroup):
     full_path = State()
 
 
-@router.message(F.text == "Добавить музыку (искать в сети)")
+@router.message(F.text == "💻 Искать в музыкальном хранилище 💻")
 async def add_music_newtork(message: Message, state: FSMContext):
     """FSM AddMusicNetwork. Просить у пользователя ввести имя исполнителя."""
 
@@ -59,7 +59,7 @@ async def cancel_executor_network(message: Message, state: FSMContext):
         return
 
     await state.clear()
-    await message.answer(text="Скачивание исполнителя по сети отменено")
+    await message.answer(text="Скачивание из музыкального архива отменено")
     await bot.send_message(
         text="Музыкальный архим",
         chat_id=message.chat.id,
@@ -267,7 +267,7 @@ async def add_full_path(message: Message, state: FSMContext):
             img = "Здесь скоро появится изображение"
             if songs_jpg:
                 img = songs_jpg[0]
-
+            
             album_create = AlbumSQLAlchemyRepository().create_album(
                 title=album_title,
                 year=int(album_year),

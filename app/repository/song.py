@@ -75,6 +75,47 @@ class SongSQLAlchemyRepository:
                 print(err)
                 return False
 
+    def get_songs_by_order(
+        self,
+        album_id: int,
+        order_songs: List,
+    ):
+        """Возвращает песни из альбома по номеру."""
+        with db_helper.get_sesson() as session:
+            try:
+                songs = (
+                    session.query(Song)
+                    .filter(
+                        Song.album_id == album_id,
+                        Song.order.in_(order_songs),
+                    )
+                    .order_by(Song.order)
+                    .all()
+                )
+
+                return songs
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False
+
+    def get_song(self, name: str):
+        """Возвращает одну песню из альбома по имени."""
+        with db_helper.get_sesson() as session:
+            try:
+                songs = (
+                    session.query(Song)
+                    .filter_by(
+                        name=name,
+                    )
+                    .first()
+                )
+                return songs
+            except Exception as err:
+                session.rollback()
+                print(err)
+                return False
+
     def delete_songs(self, album_id: int, order_songs: List[int]):
         """Удаляет песни из альбома."""
         with db_helper.get_sesson() as session:

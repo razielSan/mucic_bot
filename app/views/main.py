@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
 
+
 from extensions import bot
 from keyboards.reply import get_music_menu_button
 from functions import get_info_is_bot

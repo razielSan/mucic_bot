@@ -5,12 +5,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Настройка приложения."""
+    """Настройки приложения."""
 
     TOKEN: str
     SQLITE_BASE: str
-    MUSIC_PATH: str # Путь для скачивания музыки по сети 
-    AlBUM_TITLE_COLLECTION: str = "Сборник песен" # Название для сборника пользователя
+    MUSIC_PATH: str  # Путь для скачивания музыки из музыкального архива
+    HITMOTOP_SEARCH_URL: str = (
+        "https://ru.hitmotop.com/search?q="  # путь для поиска музыки с сайта hitmotop
+    )
+    HITMOTOP_PATH: str = "media\hitmotop" # путь для хранения скаченой музыки с сайта hitmitop
+    COUNT_HITMOTOP: int = 30  # количество песеня для скачивания с сайта hitmotop
+    AlBUM_TITLE_COLLECTION: str = "Сборник песен"  # Название для сборника пользователя
     MUSIC_FORMAT_LIST: List = ["mp3", "wav", "m4a", "ogg", "flac"]
     IMG_FORMAT_LIST: List = ["jpg", "jpeg", "gif", "png", "bmp"]
     bot_command: List = [

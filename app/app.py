@@ -5,11 +5,14 @@ from views.main import router as main_router
 from views.add_music import router as add_music_router
 from views.music_archive import router as music_archive_router
 from views.search import router as search_router
-from views.add_music_network import router as add_music_network_router
 from views.add_collection_of_songs import router as add_collection_of_songs_router
 from views.collection_songs import router as collection_songs_router
 from views.list_executor import router as list_executor_router
+from views.add_music_network.main import router as main_add_music_network_router
+from views.add_music_network.search_music_archive import router as search_music_archive_router
+from views.add_music_network.search_by_hitmotop import router as search_hitmotop_router
 from config import settings
+
 
 
 async def on_startup():
@@ -24,9 +27,11 @@ async def main():
     # await bot.delete_my_commands()
 
     dp.startup.register(on_startup)
+    dp.include_router(main_add_music_network_router)
+    dp.include_router(search_music_archive_router)
+    dp.include_router(search_hitmotop_router)
     dp.include_router(list_executor_router)
     dp.include_router(collection_songs_router)
-    dp.include_router(add_music_network_router)
     dp.include_router(add_collection_of_songs_router)
     dp.include_router(music_archive_router)
     dp.include_router(search_router)

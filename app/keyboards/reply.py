@@ -9,23 +9,39 @@ def get_music_menu_button():
     reply_kb = ReplyKeyboardBuilder(
         [
             [
-                KeyboardButton(text="Музыкальный архив"),
+                KeyboardButton(text="🎼 Музыкальный архив 🎼"),
             ],
             [
-                KeyboardButton(
-                    text="Добавить музыку (самостоятельно)"
-                ),
-                KeyboardButton(text="Добавить музыку (искать в сети)"),
+                KeyboardButton(text=f"🎶 {settings.AlBUM_TITLE_COLLECTION} 🎶"),
             ],
             [
-                KeyboardButton(text="Добавить музыку в сборник песен"),
-                KeyboardButton(text=settings.AlBUM_TITLE_COLLECTION),
+                KeyboardButton(text="💾 Добавить музыку (самостоятельно) 💾"),
+                KeyboardButton(text="💾 Искать музыку в интернете 💾"),
             ],
             [
-                KeyboardButton(text="Список исполнителей"),
+                KeyboardButton(text="💾 Добавить музыку в сборник песен 💾"),
             ],
             [
-                KeyboardButton(text="Поиск"),
+                KeyboardButton(text="🎸 Список исполнителей 🎸"),
+            ],
+            [
+                KeyboardButton(text="🔎 Поиск 🔍"),
+            ],
+        ]
+    )
+
+    return reply_kb.as_markup(resize_keyboard=True)
+
+
+def get_button_for_add_music_network():
+    """Возвращает кнопки для поиска по сети."""
+    reply_kb = ReplyKeyboardBuilder(
+        [
+            [
+                KeyboardButton(text="💻 Искать в музыкальном хранилище 💻"),
+            ],
+            [
+                KeyboardButton(text="💻 Искать на сайте hitmotop 💻"),
             ],
         ]
     )

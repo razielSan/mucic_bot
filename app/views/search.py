@@ -20,7 +20,7 @@ from functions import get_info_executors
 router = Router(name=__name__)
 
 
-@router.message(F.text == "Поиск")
+@router.message(F.text == "🔎 Поиск 🔍")
 async def search(message: Message):
     """Возвращает инлайн клавиатуру поиска для пользователя."""
     telegram = message.chat.id
@@ -101,6 +101,12 @@ async def search_name(call: CallbackQuery, state: FSMContext):
             text="Поиск завершен",
             reply_markup=ReplyKeyboardRemove(),
         )
+
+        # Удаляет из выдачи всех исполнителей сборник песен
+        for index, executor in enumerate(executors):
+            if executor.name == user.name and executor.country == user.name:
+                executors.pop(index)
+
         await call.message.answer(
             text="Список найденных исполнителей",
             reply_markup=get_button_is_search_executor(
@@ -230,16 +236,8 @@ async def show_executors_is_search(call: CallbackQuery):
 
     data_executor = get_info_executors(executor=executor, user=user)
 
-    # Проверяет является ли альбом сборником песен
     album = None
     list_songs = None
-    if executor.name == user.name and executor.country == user.name:
-        album = AlbumSQLAlchemyRepository().get_album(
-            executor_name=user.name,
-            title="Сборник песен",
-            executor_id=executor.id,
-        )
-        list_songs = SongSQLAlchemyRepository().get_songs(album_id=album.id)
 
     await bot.send_message(
         chat_id=call.message.chat.id,
