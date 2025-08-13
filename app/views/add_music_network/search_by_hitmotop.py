@@ -191,12 +191,15 @@ async def search_order_hitmotop(message: Message, state: FSMContext):
                     state=state,
                 )
             else:
-                song = SongSQLAlchemyRepository().get_songs(album_id=album.id)[-1]
+                song = SongSQLAlchemyRepository().get_songs(
+                    album_id=album.id,
+                )
+                order = song[-1].order if song else 0
                 SongSQLAlchemyRepository().create_songs(
                     songs=[[path, filename]],
                     album_id=album.id,
                     executor_name=executor.name,
-                    order=song.order + 1,
+                    order=order + 1,
                     executor_album=album.title,
                 )
 

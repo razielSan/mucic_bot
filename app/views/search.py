@@ -35,6 +35,10 @@ async def search(message: Message):
         user_id=user.id,
     )
 
+    for index, executor in enumerate(executors):
+        if executor.name == user.name and executor.country == user.name:
+            executors.pop(index)
+
     if not executors:
         await message.answer(
             "У вас нет исполнителей в музыкальном архиве",

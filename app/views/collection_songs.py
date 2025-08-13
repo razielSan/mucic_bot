@@ -186,20 +186,29 @@ async def finish_delete_songs(message: Message, state: FSMContext):
         executor_id=executor.id,
     )
 
-    songs_list = SongSQLAlchemyRepository().get_songs_by_order(
-        album_id=album.id,
-        order_songs=list_number_songs,
-    )
-    for song in songs_list:
-        if song.file_id.find(settings.HITMOTOP_PATH) != -1:
-            os.remove(song.file_id)
     if all_song:
+        # Удаляет песни из пути media/hitmotop/<user_name>/
+        songs_delete_list = SongSQLAlchemyRepository().get_songs(album_id=album.id)
+        for song in songs_delete_list:
+            if song.file_id.find(settings.HITMOTOP_PATH) != -1:
+                os.remove(song.file_id)
         SongSQLAlchemyRepository().delete_all_songs(album_id=album.id)
+
     else:
+        songs_list = SongSQLAlchemyRepository().get_songs_by_order(
+            album_id=album.id,
+            order_songs=list_number_songs,
+        )
+        for song in songs_list:
+            if song.file_id.find(settings.HITMOTOP_PATH) != -1:
+                os.remove(song.file_id)
+                
         SongSQLAlchemyRepository().delete_songs(
             album_id=album.id,
             order_songs=list_number_songs,
         )
+
+        # Удаляет песни из пути media/hitmotop/<user_name>/
     await state.clear()
     await message.answer("Песни были успешно удалены")
     await bot.send_message(

@@ -29,7 +29,6 @@ async def get_list_executors(message: Message):
     executor_list = ExecutorSQLAlchemyRepository().get_executors_is_user(
         user_id=user.id
     )
-
     if executor_list:
         data = get_executors_is_users(
             list_executor=executor_list,
