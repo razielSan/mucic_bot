@@ -198,7 +198,6 @@ def create_json_executors_dict(
             if dirname or count == 0:
                 data = dirname[0]
                 if re.match(r"[^()]+[(]", data) or count == 0:
-                    print("ok")
                     executors.append((dirname, dirpath))
             count += 1
 
