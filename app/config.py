@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     TOKEN: str
     SQLITE_BASE: str
     MUSIC_PATH: str  # Путь для скачивания музыки из музыкального архива
+    UPLOAD_PATH_MUSIC_ACRHIVE: str # Путь где хранится json файл с именами и жанрами исполнителей
+    # из музыкального архива
     HITMOTOP_SEARCH_URL: str = (
         "https://ru.hitmotop.com/search?q="  # путь для поиска музыки с сайта hitmotop
     )
@@ -24,10 +26,15 @@ class Settings(BaseSettings):
             description="Меню бота",
         ),
         BotCommand(
+            command="/admin",
+            description="Для администраторов",
+        ),
+        BotCommand(
             command="/help",
             description="Описание умений бота",
         ),
     ]
+    ADMINS_LIST: List[int] = []
 
     model_config = SettingsConfigDict(env_file=".env")
 

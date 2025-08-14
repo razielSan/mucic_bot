@@ -38,6 +38,9 @@ def get_button_for_add_music_network():
     reply_kb = ReplyKeyboardBuilder(
         [
             [
+                KeyboardButton(text="💻 Список исполнителей музыкального хранилища 💻"),
+            ],
+            [
                 KeyboardButton(text="💻 Искать в музыкальном хранилище 💻"),
             ],
             [
@@ -104,4 +107,14 @@ def get_buttons_is_add_music_newtork(
     if forward:
         reply_kb.row(KeyboardButton(text="Дальше"))
     reply_kb.row(KeyboardButton(text="Отмена"))
+    return reply_kb.as_markup(resize_keyboard=True)
+
+
+def get_menu_admin():
+    """Возвращает кнопки меню для администратора."""
+    reply_kb = ReplyKeyboardBuilder()
+    reply_kb.row(
+        KeyboardButton(text="Обновить список исполнителей для музыкального хранилища")
+    )
+
     return reply_kb.as_markup(resize_keyboard=True)

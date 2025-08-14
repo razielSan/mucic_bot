@@ -1,5 +1,8 @@
-from typing import List
+from typing import List, Dict
 from urllib.parse import quote
+import os
+import re
+import json
 
 import requests
 from bs4 import BeautifulSoup
@@ -160,12 +163,11 @@ def get_data_names_and_title_aritists(list_artists: List):
 
 
 def download_music_to_the_path(url: str, path: str):
-    """_summary_
+    """Скачивает музыку в указаный путь.
 
     Args:
-        url (str): _description_
-        path (str): _description_
-        filename (str): _description_
+        url (str): URL откуда будет скачана музыка
+        path (str): Путь куда будет закачана музыка
     """
     HEADERS = {
         "Accept": "*/*",
@@ -176,3 +178,62 @@ def download_music_to_the_path(url: str, path: str):
     with open(f"{path}", "wb") as file:
         for chunk in res.iter_content(1024):
             file.write(chunk)
+
+
+def create_json_executors_dict(
+    path: str,
+    upload_path: str,
+):
+    """Создает json файл с жанрами и исполнителями в этих жанрах.
+
+    Args:
+        path (str): Путь откуда будет браться исполнители
+        upload_path (str): Путь куда будет загружаться json файл с исполнителями
+    """
+    try:
+        executors = []
+
+        count = 0
+        for dirpath, dirname, filename in os.walk(top=path):
+            if dirname or count == 0:
+                data = dirname[0]
+                if re.match(r"[^()]+[(]", data) or count == 0:
+                    print("ok")
+                    executors.append((dirname, dirpath))
+            count += 1
+
+        data_dict = {genre: None for genre in executors[0][0]}
+
+        for executor, path in executors[1:]:
+            genre = path.split("\\")[3]
+
+            if genre in data_dict:
+                if data_dict.get(genre):
+                    data: List = data_dict[f"{genre}"]
+                    data.extend(executor)
+                    data_dict[f"{genre}"] = data
+                else:
+                    data_dict[f"{genre}"] = executor
+
+        with open(upload_path, "w", encoding="utf-8") as file:
+            json.dump(data_dict, file, ensure_ascii=False, indent=4)
+        return True
+    except Exception as err:
+        print(err)
+        return False
+
+
+def get_dict_executors_music_archive(path: str):
+    """Возвращает словарь с жанром и исполнителями этого жанра из музыкального хранилища.
+
+    Args:
+        path (str): Путь до json файла
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            data_dict = json.load(file)
+
+        return data_dict
+    except Exception as err:
+        print(err)
+        return False

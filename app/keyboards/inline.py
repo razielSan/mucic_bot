@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton
@@ -281,5 +281,27 @@ def get_button_is_collection_song(
                             callback_data=f"forward_songs {executor.id}_{album.id}_{next_order}",
                         )
                     )
+
+    return inline_kb.as_markup(resize_keyboard=True)
+
+
+def get_button_by_genre_executors_music_archive(
+    data: Dict,
+):
+    """Возвращает инлайн-клавиатуру с кнопками жанров для вывода исполнителей в этом жанре.
+
+    Args:
+        data (Dict): Словарь с жанром и исполнителями этого жанра
+    """
+    inline_kb = InlineKeyboardBuilder()
+
+    count = 0
+    for genre in data:
+        if data.get(genre):
+            if count % 3 == 0:
+                inline_kb.row(InlineKeyboardButton(text=f'{genre}', callback_data=f"genreMA_{genre}"))
+            else:
+                inline_kb.add(InlineKeyboardButton(text=f'{genre}', callback_data=f"genreMA_{genre}"))
+            count += 1
 
     return inline_kb.as_markup(resize_keyboard=True)

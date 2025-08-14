@@ -13,3 +13,10 @@ async def main_add_music_netowrk(message: Message):
         text="Меню поиска",
         reply_markup=get_button_for_add_music_network(),
     )
+
+@router.message(F.text == "Список исполнителей музыкального хранилища")
+async def main_add_music_netowrk(message: Message):
+    await message.answer(
+        text="Меню поиска",
+        reply_markup=get_button_for_add_music_network(),
+    )

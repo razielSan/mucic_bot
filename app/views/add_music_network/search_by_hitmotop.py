@@ -38,7 +38,8 @@ class SearchHitmotop(StatesGroup):
 async def search_hitmotop(message: Message, state: FSMContext):
     """Работа с FSM SearchHitmotop.Просит у пользователя ввести даныые для поиска песни."""
     await message.answer(
-        "Введите имя исполнителя, название песни или имя исполнителя и название песни для поиска",
+        "Введите имя исполнителя, название песни или имя исполнителя"
+        "и название песни для поиска.Песня будет добавлена в сборник песен",
         reply_markup=get_add_music_button(),
     )
     await state.set_state(SearchHitmotop.name)
@@ -48,7 +49,7 @@ async def search_hitmotop(message: Message, state: FSMContext):
 @router.message(SearchHitmotop.order, F.text == "Отмена")
 async def cancel_search_hitmotop(message: Message, state: FSMContext):
     """Работа с FSM SearchHitmotop.Отменяет все действия."""
-    current_state = state.get_state()
+    current_state = await state.get_state()
     if current_state is None:
         return
 

@@ -52,7 +52,7 @@ async def search(message: Message):
     )
 
     await message.answer(
-        "Выберито то из списка что хотите найти", reply_markup=ReplyKeyboardRemove()
+        "Выберите то из списка что хотите найти", reply_markup=ReplyKeyboardRemove()
     )
     await bot.send_message(
         text="Варианты поиска",

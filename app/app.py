@@ -11,6 +11,8 @@ from views.list_executor import router as list_executor_router
 from views.add_music_network.main import router as main_add_music_network_router
 from views.add_music_network.search_music_archive import router as search_music_archive_router
 from views.add_music_network.search_by_hitmotop import router as search_hitmotop_router
+from views.admin import router as admin_router
+from views.add_music_network.music_archive_executor import router as music_archive_executor_router
 from config import settings
 
 
@@ -27,6 +29,8 @@ async def main():
     # await bot.delete_my_commands()
 
     dp.startup.register(on_startup)
+    dp.include_router(music_archive_executor_router)
+    dp.include_router(admin_router)
     dp.include_router(main_add_music_network_router)
     dp.include_router(search_music_archive_router)
     dp.include_router(search_hitmotop_router)
