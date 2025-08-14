@@ -31,6 +31,7 @@ pip install -r requirements.txt
 TOKEN=<Токен_Вашего_Телеграм_Бота>
 SQLITE_BASE=sqlite:///music_play.db
 MUSIC_PATH=<Путь_До_Ваших_Музыкальных_Файлов>
+UPLOAD_PATH_MUSIC_ACRHIVE=static\files\music_archive.json
 
 Пример
 
@@ -59,6 +60,18 @@ ADMINS_LIST: List[int] = [<telegram_id_администратора>, <telegram_
 
 3. Для обновления списка исполнителей из музыкального хранилища
 Зайдите в админку(/admin) и нажмите 'Обновить список исполнителей для музыкального хранилища'
+
+4. 
+
+Создайте в каталоге app папку media а в ней папку hitmotop для скачивания с сайта hitmotop
+
+media\hitmotop
+
+Создайте в каталоге app папку static а в ней папку files для работы с музыкальным хранилищем
+
+static\files
+
+
 
 
 3) Запуск программы

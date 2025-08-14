@@ -3,6 +3,7 @@ from urllib.parse import quote
 import os
 import re
 import json
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
