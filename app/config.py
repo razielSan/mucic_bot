@@ -1,4 +1,4 @@
-from typing import List
+﻿from typing import List
 
 from aiogram.types import BotCommand
 from pydantic_settings import BaseSettings, SettingsConfigDict

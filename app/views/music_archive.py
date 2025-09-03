@@ -124,6 +124,33 @@ async def get_executors_information_when_you_press_the_button(call: CallbackQuer
     )
 
 
+@router.callback_query(F.data.startswith("AlbumList "))
+async def get_albums_executor_by_is_forward_or_back(call: CallbackQuery):
+    """Возвращает альбомы исполнителя при нажатии кнопок назад или вперед."""
+    _, flag, executor_id, album_id, album_position = call.data.split(" ")
+
+    user = UserSQLAlchemyRepository().get_user_by_telegram(
+        telegram=call.message.chat.id,
+    )
+
+    executor = ExecutorSQLAlchemyRepository().get_executor_by_id(
+        id=int(executor_id), user_id=user.id
+    )
+
+    data_executor = get_info_executors(executor=executor, user=user)
+
+    await bot.edit_message_text(
+        text=data_executor,
+        reply_markup=get_albums_executors_button(
+            user=user,
+            executor=executor,
+            album_position=int(album_position),
+        ),
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+    )
+
+
 @router.callback_query(F.data.startswith("album "))
 async def get_album_songs(call: CallbackQuery):
     """Возвращает список песен для альбома."""

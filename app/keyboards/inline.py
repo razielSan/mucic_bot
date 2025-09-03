@@ -14,6 +14,7 @@ def get_albums_executors_button(
     album=None,
     list_songs=None,
     song_position=0,
+    album_position=0,
 ):
     """Возвращает инлайн-клавиатуру спиcка альбомов исполнителя или с отдельным альбомом со списком песен."""
     inline_kb = InlineKeyboardBuilder()
@@ -37,9 +38,7 @@ def get_albums_executors_button(
     if album:
         # Логика для отдельного альбома со списком песен
         delete_album = True
-        left_split = "*" * 20
-        right_split = "*" * 20
-        data = f"{left_split}{album.title} ({album.year}){right_split}\n"
+        data = f"🎧 {album.title} ({album.year}) 🎧\n"
         if album_collection_songs:
             data = None
 
@@ -63,11 +62,42 @@ def get_albums_executors_button(
     else:
         # Логика для списка альбомов исполнителя
         albums = AlbumSQLAlchemyRepository().get_albums(executor_id=executor.id)
-        for album in albums:
+
+        for album in albums[album_position : album_position + 5]:
             inline_kb.row(
                 InlineKeyboardButton(
                     text=f"🤘 {album.title} ({album.year}) 🤘",
                     callback_data=f"album {album.id}_{executor.id}_+",
+                )
+            )
+        if album_position == 0:
+            if len(albums) <= 5:
+                pass
+            else:
+                inline_kb.row(
+                    InlineKeyboardButton(
+                        text="Вперед 👉",
+                        callback_data=f"AlbumList forward {executor.id} {album.id} {album_position+  5}",
+                    )
+                )
+        elif len(albums) - album_position <= 5:
+            inline_kb.row(
+                InlineKeyboardButton(
+                    text="👈 Назад",
+                    callback_data=f"AlbumList back {executor.id} {album.id} {album_position- 5}",
+                )
+            )
+        else:
+            inline_kb.row(
+                InlineKeyboardButton(
+                    text="👈 Назад",
+                    callback_data=f"AlbumList back {executor.id} {album.id} {album_position - 5}",
+                )
+            )
+            inline_kb.add(
+                InlineKeyboardButton(
+                    text="Вперед 👉",
+                    callback_data=f"AlbumList forward {executor.id} {album.id} {album_position + 5}",
                 )
             )
 

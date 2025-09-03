@@ -122,7 +122,9 @@ async def add_executor_network(message: Message, state: FSMContext):
         await state.set_state(AddMusicNetwork.temp)
 
     else:
-        await message.answer("Указанный исполнитель не найден")
+        await message.answer(
+            "Указанный исполнитель не найден\n\nВведите снова имя исполнителя"
+        )
 
 
 @router.message(AddMusicNetwork.temp, F.text)
