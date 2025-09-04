@@ -201,33 +201,41 @@ async def add_songs(message: Message, state: FSMContext):
     async def task():
         global music
         data = await state.get_data()
-        list_songs = data["list_songs"]
-        counter = data["counter"] + 1
 
-        quantity = data["quantity"]
-        list_songs.append([message.audio.file_id, message.audio.file_name])
-        await state.set_state(AddMusic.counter)
-        await state.update_data(counter=counter)
-        await state.set_state(AddMusic.list_songs)
-        await state.update_data(list_songs=list_songs)
-        await state.set_state(AddMusic.songs)
-        if counter == quantity:
-            music.file_id = message.audio.file_id
-            music.list_songs = list_songs
-        return
+        try:
+            list_songs = data["list_songs"]
+            counter = data["counter"] + 1
+
+            quantity = data["quantity"]
+            list_songs.append([message.audio.file_id, message.audio.file_name])
+            await state.set_state(AddMusic.counter)
+            await state.update_data(counter=counter)
+            await state.set_state(AddMusic.list_songs)
+            await state.update_data(list_songs=list_songs)
+            await state.set_state(AddMusic.songs)
+            if counter == quantity:
+                music.file_id = message.audio.file_id
+                music.list_songs = list_songs
+            return
+        except Exception as err:
+            print(err)
+            return
 
     if message.content_type == ContentType.AUDIO:
         global music
         await asyncio.gather(task())
         data = await state.get_data()
-        if data["counter"] > 30:
+        if data.get("counter", 0) > 30:
             await state.clear()
             await message.answer("Количество песен не должно превышать 30")
             await start_add_music(message=message, state=state)
             return
         if message.audio.file_id == music.file_id:
             data = await state.get_data()
-            if data["counter"] > 30:
+            if data.get("counter", 0) == 0:
+                await state.clear()
+                return             
+            elif data.get("counter", 0) > 30:
                 await state.clear()
                 await message.answer("Количество песен не должно превышать 30")
                 await start_add_music(message=message, state=state)

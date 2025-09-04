@@ -1,4 +1,6 @@
 import asyncio
+import os
+from pathlib import Path
 
 from extensions import bot, dp
 from views.main import router as main_router
@@ -18,10 +20,18 @@ from views.add_music_network.music_archive_executor import (
 )
 from views.admin import router as admin_router
 from config import settings
+from models import Base
+from models.db_helper import db_helper
 
 
 async def on_startup():
     """Срабатывает при старте бота."""
+    _, _, _, SQLITE_PATH = settings.SQLITE_BASE.split("/")
+    SQLITE_PATH, _ = SQLITE_PATH.split("?")
+    path = os.path.join(Path(__file__).parent, SQLITE_PATH)
+    if not os.path.exists(path):
+        Base.metadata.create_all(db_helper.engine)
+        print("База данных успешно создана")
     print("Бот запущен")
 
 

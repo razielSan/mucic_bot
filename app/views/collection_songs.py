@@ -3,7 +3,7 @@ import os
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.filters import StateFilter
 
 from extensions import bot
@@ -203,7 +203,7 @@ async def finish_delete_songs(message: Message, state: FSMContext):
         for song in songs_list:
             if song.file_id.find(settings.HITMOTOP_PATH) != -1:
                 os.remove(song.file_id)
-                
+
         SongSQLAlchemyRepository().delete_songs(
             album_id=album.id,
             order_songs=list_number_songs,
@@ -211,5 +211,8 @@ async def finish_delete_songs(message: Message, state: FSMContext):
 
         # Удаляет песни из пути media/hitmotop/<user_name>/
     await state.clear()
-    await message.answer("Песни были успешно удалены")
+    await message.answer(
+        "Песни были успешно удалены",
+        reply_markup=ReplyKeyboardRemove(),
+    )
     await get_collection_songs(message=message)
